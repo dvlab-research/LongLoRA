@@ -144,7 +144,7 @@ torchrun --nproc_per_node=8 supervised-fine-tune.py  \
         --tf32 True
 ```
 - We typically make supervised fine-tuning upon the fine-tuned context extended models, `path_to_finetuned_models`, like `Llama-2-13b-longlora-32k` or `Llama-2-13b-longlora-32k-ft`.
-- During our dataset colection, it is hard for us to collect many high-quality QA that are larger than 32768. Thus, if you use our `LongQA.json`, please also set `model_max_length` as 32768.
+- During our dataset collection, it is hard for us to collect many high-quality QA that are larger than 32768. Thus, if you use our `LongQA.json`, please also set `model_max_length` as 32768.
 
 
 ### Get trainable weights in low-rank training
