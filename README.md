@@ -2,7 +2,7 @@
 
 # LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models
 
-<font size=7><div align='center' > <a href=>**Paper**</a> | <a href="https://huggingface.co/Yukang">**Models**</a> | [**Training**](#training) | [**Inference**](#inference) | <a href="https://b3cfcf9e79ff42df5f.gradio.live">**Online Demo**</a></div></font>
+<font size=7><div align='center' > <a href=http://arxiv.org/abs/2309.12307>**Paper**</a> | <a href="https://huggingface.co/Yukang">**Models**</a> | [**Training**](#training) | [**Inference**](#inference) | <a href="https://b3cfcf9e79ff42df5f.gradio.live">**Online Demo**</a></div></font>
 
 <p align="center"> <img src="imgs/demo-harry-potter1.png" width="100%"> </p>
 <p align="center"> <img src="imgs/demo-harry-potter2.png" width="100%"> </p>
@@ -15,9 +15,9 @@
 ## News
 - [x] [2023.9.22] We release our **13B and 70B 32k models with the supervised fine-tuning**, which is feasible for long context QA. Please check [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft). Welcome to check them out!
 - [x] [2023.9.22] We release all our fine-tuned [models](https://huggingface.co/Yukang), including **70B-32k models**, [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k), [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft). Welcome to check them out!
-- [x] [2023.9.22] We release [Paper]() and this GitHub repo, including training and evaluation code.
+- [x] [2023.9.22] We release [Paper](http://arxiv.org/abs/2309.12307) and this GitHub repo, including training and evaluation code.
 
-**LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models [[Paper]()]** <br />
+**LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models [[Paper](http://arxiv.org/abs/2309.12307)]** <br />
 [Yukang Chen](https://scholar.google.com/citations?user=6p0ygKUAAAAJ&hl=en),
 [Shengju Qian](https://scholar.google.com/citations?user=QNnWmasAAAAJ),
 [Haotian Tang](https://scholar.google.com/citations?user=WxL13BAAAAAJ&hl),
@@ -29,7 +29,7 @@
 ## Abstract
 We present LongLoRA, an efficient fine-tuning approach that extends the context sizes of pre-trained large language models (LLMs), with limited computation cost.
 Typically, training LLMs with long context sizes is computationally expensive, requiring extensive training hours and GPU resources.
-In this paper, we speed up the context extension of LLMs in two aspects. On the one hand, although dense global attention is needed during inference, fine-tuning the model can be effectively and efficiently done by sparse local attention. The proposed shift short attention effectively enables context extension, leading to non-trivial computation saving with similar performance to fine-tuning with vanilla attention. On the other hand, we find that LoRA for context extension works well under the premise of trainable embedding and normalization. LongLoRA demonstrates strong empirical results on various tasks on LLaMA2 models from 7B/13B to 70B. LongLoRA adopts LLaMA2 7B from 4k context to 100k, or LLaMA2 70B to 32k on a single 8x A100 machine. LongLoRA extends models' context while retaining their original architectures, and is compatible with most existing techniques, like FlashAttention-2. In addition, to make LongLoRA practical, we collect a dataset, LongQA, for supervised fine-tuning. It contains more than 3k long context question-answer pairs. For more details, please refer to the [paper]().
+In this paper, we speed up the context extension of LLMs in two aspects. On the one hand, although dense global attention is needed during inference, fine-tuning the model can be effectively and efficiently done by sparse local attention. The proposed shift short attention effectively enables context extension, leading to non-trivial computation saving with similar performance to fine-tuning with vanilla attention. On the other hand, we find that LoRA for context extension works well under the premise of trainable embedding and normalization. LongLoRA demonstrates strong empirical results on various tasks on LLaMA2 models from 7B/13B to 70B. LongLoRA adopts LLaMA2 7B from 4k context to 100k, or LLaMA2 70B to 32k on a single 8x A100 machine. LongLoRA extends models' context while retaining their original architectures, and is compatible with most existing techniques, like FlashAttention-2. In addition, to make LongLoRA practical, we collect a dataset, LongQA, for supervised fine-tuning. It contains more than 3k long context question-answer pairs. For more details, please refer to the [paper](http://arxiv.org/abs/2309.12307).
 
 
 ## Highlights
@@ -264,7 +264,7 @@ If you find this project useful in your research, please consider citing:
 @article{longlora,
   title={LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models},
   author={Yukang Chen and Shengju Qian and Haotian Tang and Xin Lai and Zhijian Liu and Song Han and Jiaya Jia},
-  journal={arXiv},
+  journal={arXiv:2309.12307},
   year={2023}
 }
 ```
