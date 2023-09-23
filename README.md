@@ -1,4 +1,4 @@
-[![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-blue)](https://b3cfcf9e79ff42df5f.gradio.live)
+[![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-blue)](https://50f4aa4f50cc462fc6.gradio.live)
 
 # LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models
 
@@ -16,7 +16,7 @@
 [Song Han](https://scholar.google.com/citations?user=E0iCaa4AAAAJ&hl=zh-CN),
 [Jiaya Jia](https://scholar.google.com/citations?user=XPAkzTEAAAAJ&hl=en)<br />
 
-<font size=7><div align='center' > <a href=http://arxiv.org/abs/2309.12307>**Paper**</a> | <a href="https://huggingface.co/Yukang">**Models**</a> | [**Training**](#training) | [**Inference**](#inference) | <a href="https://b3cfcf9e79ff42df5f.gradio.live">**Online Demo**</a></div></font>
+<font size=7><div align='center' > <a href=http://arxiv.org/abs/2309.12307>**Paper**</a> | <a href="https://huggingface.co/Yukang">**Models**</a> | [**Training**](#training) | [**Inference**](#inference) | <a href="https://50f4aa4f50cc462fc6.gradio.live">**Online Demo**</a></div></font>
 
 <p align="center"> <img src="imgs/demo-harry-potter1.png" width="100%"> </p>
 <p align="center"> <img src="imgs/demo-harry-potter2.png" width="100%"> </p>
