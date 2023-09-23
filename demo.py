@@ -37,7 +37,8 @@ If multiple users are using it at the same time, they will enter a queue, which 
 - **Material Title** is optional. It can be the tile of the book.\n
 **Note**: <br>
 - The demo model is **Llama-2-13b-chat-longlora-32k-sft**. We use 8-bit quantization for low GPU memory inference, which may impair text-generation quality.<br> 
-- There are 10 book-related examples and 5 paper-related examples, 15 in total. \n
+- There are 10 book-related examples and 5 paper-related examples, 15 in total.<br>
+- Note that only txt file is currently support.\n
 **Example questions**: <br>
 &ensp; Please summarize the book in one paragraph. <br>
 &ensp; Please tell me that what high-level idea the author want to indicate in this book. <br>
@@ -171,8 +172,6 @@ def format_prompt(material, message, material_type="book", material_title=None):
     return prompt
 
 def read_txt_file(material_txt):
-    if not material_txt.split(".")[-1]=='txt':
-        raise ValueError("Only support txt or pdf file.")
     content = ""
     with open(material_txt) as f:
         for line in f.readlines():
@@ -183,10 +182,15 @@ def build_generator(
     model, tokenizer, temperature=0.6, top_p=0.9, max_gen_len=4096, use_cache=True
 ):
     def response(material, question, material_type="", material_title=None):
+        if not material.name.split(".")[-1]=='txt':
+            return "Only support txt file."
+
         material = read_txt_file(material.name)
         prompt = format_prompt(material, question, material_type, material_title)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
+        if len(inputs['input_ids'][0]) > 32768:
+            return "This demo supports tokens less than 32768, while the current is %d. Please use material with less tokens."%len(inputs['input_ids'][0])
         output = model.generate(
             **inputs,
             max_new_tokens=max_gen_len,
