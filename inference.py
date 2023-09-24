@@ -111,7 +111,7 @@ def main(args):
     respond = build_generator(model, tokenizer, temperature=args.temperature, top_p=args.top_p,
                               max_gen_len=args.max_gen_len, use_cache=not args.flash_attn)
 
-    output = respond(material, args.question, args.material_type, args.material_title)
+    output = respond(args.material, args.question, args.material_type, args.material_title)
     print("output", output)
 
 if __name__ == "__main__":
