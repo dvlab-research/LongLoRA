@@ -54,7 +54,7 @@ def build_generator(
     model, tokenizer, temperature=0.6, top_p=0.9, max_gen_len=4096, use_cache=True
 ):
     def response(material, question, material_type="", material_title=None):
-        material = read_txt_file(material.name)
+        material = read_txt_file(material)
         prompt = format_prompt(material, question, material_type, material_title)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
