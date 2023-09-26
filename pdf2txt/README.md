@@ -13,8 +13,8 @@ apt-get install poppler-utils
 ```
 
 ### 2. Download OCR model
-Please download the weight [trained_ocr_cascade_large.pth](https://drive.google.com/file/d/1DtHtR3hhj8Df_Lkgdm9P79Eljot5MR_i/view?usp=share_link) first.
-Please set the weight path in `configs/cascade_dit_large.yaml`.
+- Please download the weight [trained_ocr_cascade_large.pth](https://drive.google.com/file/d/1DtHtR3hhj8Df_Lkgdm9P79Eljot5MR_i/view?usp=share_link) first.
+- Please set the weight path in `configs/cascade_dit_large.yaml`.
 
 ### 3. Basic usage:
 ```
