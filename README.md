@@ -194,6 +194,19 @@ python3 eval.py --seq_len 8192 --context_size 8192 --batch_size 1 --base_model p
 | Proof-pile | test       | [proof-pile/test_sampled_data.bin](https://drive.google.com/file/d/1bUI5lPDvrqzY_XXJJ2sSuvZx0Y9AZClE/view?usp=share_link)         |
  
 
+### Passkey Retrieval
+We provide a manner to test the passkey retrieval accuracy. For example,
+```
+python3 passkey_retrivial.py \
+        --context_size 32768 \
+        --base_model path_to/Llama-2-7b-longlora-32k \
+        --max_tokens 32768 \
+        --interval 1000
+```
+- Note that the `context_size` is the context length during fine-tuning.
+- `max_tokens` is maximum length for the document in passkey retrieval evaluation.
+- `interval` is the interval during the document length increasing. It is a rough number because the document increases by sentences.
+
 ## Inference 
 To chat with [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) or [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft), you need to run `merge_lora_weights_and_save_hf_model.py` first, and then:
 ```
@@ -271,6 +284,6 @@ If you find this project useful in your research, please consider citing:
 ## Acknowledgement
 -  This work is built upon the [LLaMA2](https://ai.meta.com/llama) as the pre-trained models.
 - This work is based on [DeepSpeed](https://github.com/microsoft/DeepSpeed), [peft](https://github.com/huggingface/peft), and [Flash-Attention2](https://github.com/Dao-AILab/flash-attention) for acceleration.
-- The perplexity evaluation code is modified upon [Landmark Attention](https://github.com/epfml/landmark-attention).
+- Some evaluation code is modified upon [Landmark Attention](https://github.com/epfml/landmark-attention).
 - We use [LongChat](https://github.com/DachengLi1/LongChat) for the retrieval evaluation.
 
