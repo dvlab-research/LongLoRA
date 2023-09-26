@@ -77,7 +77,7 @@ pip install flash-attn --no-build-isolation
 
 ## Training
 ### Pre-trained weights
-We use LLaMA2 models as the pre-trained weights and fine-tune them to long context window sizes. Please download [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf), [Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf), and [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf), based on your choices.
+We use LLaMA2 models as the pre-trained weights and fine-tune them to long context window sizes. Please download [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf), [Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf), and [Llama-2-70b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf), based on your choices.
 
 ### Fine-tuning
 ```
