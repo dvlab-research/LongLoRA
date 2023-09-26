@@ -1,8 +1,11 @@
 # Extract text from pdf by dit detection and ocr
 
 The script uses various libraries such as `pdf2image`, `easyocr`, `ditod` and `detectron2` for processing.
+
 Detected objects are categorized into "text", "title", "list", "table", and "figure".
+
 The script provides detailed timing information for various processing steps, which can be useful for performance analysis.
+
 Text extraction uses `easyocr` and the results are further processed using SymSpell for word segmentation and a regular expression for filtering.
 
 ### 1. Installation:
