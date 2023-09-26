@@ -13,9 +13,6 @@ scipy
 opencv-python
 pdf2image
 easyocr
-os
 argparse
 regex
 symspellpy
-time
-'git+https://github.com/facebookresearch/detectron2.git'
