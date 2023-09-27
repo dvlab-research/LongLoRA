@@ -24,6 +24,7 @@ import transformers
 from torch.utils.data import Dataset
 from transformers import Trainer, DataCollatorForLanguageModeling
 from llama_attn_replace import replace_llama_attn
+from gptneox_attn_replace import replace_gpt_neox_attn
 from peft import LoraConfig, get_peft_model
 from torch.distributed import barrier
 
@@ -39,7 +40,8 @@ DEFAULT_UNK_TOKEN = "<unk>"
 
 @dataclass
 class ModelArguments:
-    model_name_or_path: Optional[str] = field(default="facebook/opt-125m")
+    model_name_or_path: Optional[str] = field(default="EleutherAI/gpt-neox-20b")
+    model_type: Optional[str] = field(default="gpt-neox")
 
 @dataclass
 class TrainingArguments(transformers.TrainingArguments):
@@ -99,7 +101,11 @@ def train():
     parser = transformers.HfArgumentParser((ModelArguments, TrainingArguments))
     model_args, training_args = parser.parse_args_into_dataclasses()
 
-    replace_llama_attn(training_args.use_flash_attn)
+    # NOTE: May expand supported model types in the future
+    if model_args.model_type == "gpt-neox":
+        replace_gpt_neox_attn(training_args.use_flash_attn) 
+    else:
+        replace_llama_attn(training_args.use_flash_attn)
 
     # Set RoPE scaling factor
     config = transformers.AutoConfig.from_pretrained(
@@ -157,10 +163,16 @@ def train():
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     if training_args.low_rank_training:
+        if model_args.model_type == "gpt-neox":
+            # added `dense` to match with llama as the basic LoRA would only target 'query_key_value'
+            targets = ["query_key_value", "dense"]
+        else:
+            targets=["q_proj", "k_proj", "v_proj", "o_proj"],
+
         config = LoraConfig(
             r=8,
             lora_alpha=16,
-            target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+            target_modules=targets,
             lora_dropout=0,
             bias="none",
             task_type="CAUSAL_LM",
