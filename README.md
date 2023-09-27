@@ -1,41 +1,11 @@
-[![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-blue)](https://2060079530708e861d.gradio.live)
+# LongLoRA (with GPTNeoX support): Efficient Fine-tuning of Long-Context Large Language Models
 
-# LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models
-
-## News
-- [x] [2023.9.22] We release our **13B and 70B 32k models with the supervised fine-tuning**, which is feasible for long context QA. Please check [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft). To our best knowledge, **this is the first work that release 70B model with 32k context length**.
-- [x] [2023.9.22] We release all our fine-tuned [models](https://huggingface.co/Yukang), including **70B-32k models**, [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k), [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft). Welcome to check them out!
-- [x] [2023.9.22] We release [Paper](http://arxiv.org/abs/2309.12307) and this GitHub repo, including training and evaluation code.
-
-**LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models [[Paper](http://arxiv.org/abs/2309.12307)]** <br />
-[Yukang Chen](https://scholar.google.com/citations?user=6p0ygKUAAAAJ&hl=en),
-[Shengju Qian](https://scholar.google.com/citations?user=QNnWmasAAAAJ),
-[Haotian Tang](https://scholar.google.com/citations?user=WxL13BAAAAAJ&hl),
-[Xin Lai](https://scholar.google.com/citations?user=tqNDPA4AAAAJ&hl=zh-CN),
-[Zhijian Liu](https://scholar.google.com/citations?user=3coYSTUAAAAJ&hl=en),
-[Song Han](https://scholar.google.com/citations?user=E0iCaa4AAAAJ&hl=zh-CN),
-[Jiaya Jia](https://scholar.google.com/citations?user=XPAkzTEAAAAJ&hl=en)<br />
-
-<font size=7><div align='center' > <a href=http://arxiv.org/abs/2309.12307>**Paper**</a> | <a href="https://huggingface.co/Yukang">**Models**</a> | [**Training**](#training) | [**Inference**](#inference) | <a href="https://2060079530708e861d.gradio.live">**Online Demo**</a></div></font>
-
-<p align="center"> <img src="imgs/demo-harry-potter1.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-harry-potter2.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-deadth-ends.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-two-towers.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-paper1.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-paper2.png" width="100%"> </p>
-
-## Abstract
-We present LongLoRA, an efficient fine-tuning approach that extends the context sizes of pre-trained large language models (LLMs), with limited computation cost.
-Typically, training LLMs with long context sizes is computationally expensive, requiring extensive training hours and GPU resources.
-In this paper, we speed up the context extension of LLMs in two aspects. On the one hand, although dense global attention is needed during inference, fine-tuning the model can be effectively and efficiently done by sparse local attention. The proposed shift short attention effectively enables context extension, leading to non-trivial computation saving with similar performance to fine-tuning with vanilla attention. On the other hand, we find that LoRA for context extension works well under the premise of trainable embedding and normalization. LongLoRA demonstrates strong empirical results on various tasks on LLaMA2 models from 7B/13B to 70B. LongLoRA adopts LLaMA2 7B from 4k context to 100k, or LLaMA2 70B to 32k on a single 8x A100 machine. LongLoRA extends models' context while retaining their original architectures, and is compatible with most existing techniques, like FlashAttention-2. In addition, to make LongLoRA practical, we collect a dataset, LongQA, for supervised fine-tuning. It contains more than 3k long context question-answer pairs. For more details, please refer to the [paper](http://arxiv.org/abs/2309.12307).
-
+This repo provides on top of the original implementation, support for GPTNeoX with Flash-Attention and the LongLoRA's shifted short attention as needed.
 
 ## Highlights
 **LongLoRA** speed up the context extension of pre-trained large language models in both attention-level and weight-level.
 1. The proposed shifted short attention is easy to implement, compatible with Flash-Attention, and not required during inference. 
-2. We release all our models, including models from 7B to 70B, context length from 8k to 100k, including [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft), [LLaMA2-LongLoRA-13B-64k](https://huggingface.co/Yukang/Llama-2-13b-longlora-64k), and [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k).
-3. We build up a long-context QA dataset, LongQA, for supervised fine-tuning (SFT). We release 13B and 70B 32k models with SFT,  [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft). We will further release the dataset in the next month.
+
 
 ## Installation
 ```
@@ -43,46 +13,16 @@ pip install -r requirements.txt
 pip install flash-attn --no-build-isolation
 ```
 
-## Released models
-
-### Models with supervised fine-tuning
-| Model                             | Size | Context | Train   | Link                                                                    |
-|:----------------------------------|------|---------|---------|-------------------------------------------------------------------------|
-| Llama-2-13b-chat-longlora-32k-sft | 13B  | 32768   | LoRA+   | [link](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) |
-| Llama-2-70b-chat-longlora-32k-sft | 70B  | 32768   | LoRA+   | [link](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft) |
-
-### Models with context extension via fully fine-tuning
-| Model                       | Size | Context | Train | Link                                                              |
-|:----------------------------|------|---------|-------|-------------------------------------------------------------------|
-| Llama-2-7b-longlora-8k-ft   | 7B   | 8192    | Full FT    | [link](https://huggingface.co/Yukang/Llama-2-7b-longlora-8k-ft)   |
-| Llama-2-7b-longlora-16k-ft  | 7B   | 16384   | Full FT    | [link](https://huggingface.co/Yukang/Llama-2-7b-longlora-16k-ft)  |
-| Llama-2-7b-longlora-32k-ft  | 7B   | 32768   | Full FT    | [link](https://huggingface.co/Yukang/Llama-2-7b-longlora-32k-ft)  |
-| Llama-2-7b-longlora-100k-ft | 7B   | 100000  | Full FT    | [link](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft) |
-| Llama-2-13b-longlora-8k-ft  | 13B  | 8192    | Full FT    | [link](https://huggingface.co/Yukang/Llama-2-13b-longlora-8k-ft)  |
-| Llama-2-13b-longlora-16k-ft | 13B  | 16384   | Full FT    | [link](https://huggingface.co/Yukang/Llama-2-13b-longlora-16k-ft) |
-| Llama-2-13b-longlora-32k-ft | 13B  | 32768   | Full FT    | [link](https://huggingface.co/Yukang/Llama-2-13b-longlora-32k-ft) |
-
-### Models with context extension via improved LoRA fine-tuning
-| Model                       | Size | Context | Train | Link                                                              |
-|:----------------------------|------|---------|-------|-------------------------------------------------------------------|
-| Llama-2-7b-longlora-8k      | 7B   | 8192    | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-7b-longlora-8k)      |
-| Llama-2-7b-longlora-16k     | 7B   | 16384   | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-7b-longlora-16k)     |
-| Llama-2-7b-longlora-32k     | 7B   | 32768   | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-7b-longlora-32k)     |
-| Llama-2-13b-longlora-8k     | 13B  | 8192    | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-13b-longlora-8k)     |
-| Llama-2-13b-longlora-16k    | 13B  | 16384   | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-13b-longlora-16k)    |
-| Llama-2-13b-longlora-32k    | 13B  | 32768   | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-13b-longlora-32k)    |
-| Llama-2-13b-longlora-64k    | 13B  | 65536   | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-13b-longlora-64k)    |
-| Llama-2-70b-longlora-32k    | 70B  | 32768   | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k)    |
-| Llama-2-70b-chat-longlora-32k    | 70B  | 32768   | LoRA+ | [link](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k)    |
-
 ## Training
 ### Pre-trained weights
-We use LLaMA2 models as the pre-trained weights and fine-tune them to long context window sizes. Please download [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf), [Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf), and [Llama-2-70b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf), based on your choices.
+I used GPTNeoX model as the base model architecture, which was ported from the authors' original repo where Llama2 was used.
+Some candidate pre-trained weights may include [GPT-NeoX-20B](https://huggingface.co/EleutherAI/gpt-neox-20b), [Polyglot-ko-12.8B](https://huggingface.co/EleutherAI/polyglot-ko-12.8b) and other variants.
+
 
 ### Fine-tuning
 ```
 torchrun --nproc_per_node=8 fine-tune.py  \
-        --model_name_or_path path_to/Llama-2-7b-hf \
+        --model_name_or_path path_to/gpt_neox_model_hf \
         --bf16 True \
         --output_dir path_to_saving_checkpoints       \
         --cache_dir path_to_cache \
@@ -107,7 +47,7 @@ torchrun --nproc_per_node=8 fine-tune.py  \
         --max_steps 1000
 ```
 
-- Please remember to change `path_to/Llama-2-7b-hf`, `path_to_saving_checkpoints`, `path_to_cache` to your own directory.
+- Please remember to change `path_to/gpt_neox_model_hf`, `path_to_saving_checkpoints`, `path_to_cache` to your own directory.
 - Note that you can change `model_max_length` to other values.
 - You could change `ds_configs/stage2.json` to `ds_configs/stage3.json` if you want.
 - Please set `use_flash_attn` as `False` if you use V100 machines or do not install flash attention.
@@ -143,7 +83,7 @@ torchrun --nproc_per_node=8 supervised-fine-tune.py  \
         --deepspeed "ds_configs/stage2.json" \
         --tf32 True
 ```
-- We typically make supervised fine-tuning upon the fine-tuned context extended models, `path_to_finetuned_models`, like `Llama-2-13b-longlora-32k` or `Llama-2-13b-longlora-32k-ft`.
+- We typically make supervised fine-tuning upon the fine-tuned context extended models, `path_to_finetuned_models`
 - During our dataset collection, it is hard for us to collect many high-quality QA that are larger than 32768. Thus, if you use our `LongQA.json`, please also set `model_max_length` as 32768.
 
 
@@ -282,7 +222,8 @@ If you find this project useful in your research, please consider citing:
 ```
 
 ## Acknowledgement
--  This work is built upon the [LLaMA2](https://ai.meta.com/llama) as the pre-trained models.
+- This work is an GPTNeoX port of the work from the original authors' code. [LongLoRA](https://github.com/dvlab-research/LongLoRA)
+- This work is built upon the [GPTNeoX-HF](https://huggingface.co/docs/transformers/model_doc/gpt_neox) which is based upon [EleutherAI/GPTNeoX](https://github.com/EleutherAI/gpt-neox) as the pre-trained model architecture.
 - This work is based on [DeepSpeed](https://github.com/microsoft/DeepSpeed), [peft](https://github.com/huggingface/peft), and [Flash-Attention2](https://github.com/Dao-AILab/flash-attention) for acceleration.
 - Some evaluation code is modified upon [Landmark Attention](https://github.com/epfml/landmark-attention).
 - We use [LongChat](https://github.com/DachengLi1/LongChat) for the retrieval evaluation.
