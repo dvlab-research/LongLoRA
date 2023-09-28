@@ -110,13 +110,13 @@ def get_forward_function(use_flash_attn=True, use_full=False):
         present = (key, value) if use_cache else None
 
         # NOTE: apply shift
+        group_size = int(q_len * group_size_ratio)
+        if q_len % group_size > 0:
+            raise ValueError("q_len %d should be divisible by group size %d." % (q_len, group_size))
+        num_group = q_len // group_size
         if self.training and not use_full:
             def shift(qkv, num_heads, head_dim):
                 # qkv = [bsz, nh, q_len, d]
-                group_size = int(q_len * group_size_ratio)
-                if q_len % group_size > 0:
-                    raise ValueError("q_len %d should be divisible by group size %d." % (q_len, group_size))
-                num_group = q_len // group_size
                 qkv = qkv.transpose(1, 2)
                 # qkv = [bsz, q_len, nh, d]
                 qkv[:, :, num_heads//2:] = qkv[:, :, num_heads//2:].roll(-group_size//2, dims=1)
@@ -139,7 +139,7 @@ def get_forward_function(use_flash_attn=True, use_full=False):
         if self.training and not use_full:
             attn_output = attn_output.transpose(1, 2)
             # [bsz, q_len, nh, hd]
-            attn_output[:, :, num_heads//2:] = attn_output[:, :, num_heads//2:].roll(group_size//2, dims=1)
+            attn_output[:, :, self.num_attention_heads//2:] = attn_output[:, :, self.num_attention_heads//2:].roll(group_size//2, dims=1)
             attn_output = attn_output.transpose(1, 2)
 
         # Reshape outputs
