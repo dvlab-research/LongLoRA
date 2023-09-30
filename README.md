@@ -2,6 +2,23 @@
 
 # LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models
 
+## TABLE OF CONTENTS
+1. [News](#news)
+2. [Usage](#usage-examples)
+2. [Abstract](#abstract)
+3. [Highlights](#highlights)
+4. [How to contribute](#how-to-contribute)
+5. [Requirements](#requirements)
+6. [Installation and quick guide](#installation-and-quick-guide)
+7. [Released Models](#released-models)
+8. [Training](#training)
+9. [Inference](#inference)
+10. [Demo](#demo)
+11. [Pdf2Text](#pdf2text)
+12. [Citation](#citation)
+13. [Acknowledgement](#acknowledgement)
+14. [License](#license)
+      
 ## News
 - [x] [2023.9.22] We release our **13B and 70B 32k models with the supervised fine-tuning**, which is feasible for long context QA. Please check [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft). To our best knowledge, **this is the first work that release 70B model with 32k context length**.
 - [x] [2023.9.22] We release all our fine-tuned [models](https://huggingface.co/Yukang), including **70B-32k models**, [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k), [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft). Welcome to check them out!
@@ -16,8 +33,10 @@
 [Song Han](https://scholar.google.com/citations?user=E0iCaa4AAAAJ&hl=zh-CN),
 [Jiaya Jia](https://scholar.google.com/citations?user=XPAkzTEAAAAJ&hl=en)<br />
 
-<font size=7><div align='center' > <a href=http://arxiv.org/abs/2309.12307>**Paper**</a> | <a href="https://huggingface.co/Yukang">**Models**</a> | [**Training**](#training) | [**Inference**](#inference) | <a href="https://2060079530708e861d.gradio.live">**Online Demo**</a></div></font>
+<font size=7><div align='center' > **Quick Links** <a href=http://arxiv.org/abs/2309.12307>**Paper**</a> | <a href="https://huggingface.co/Yukang">**Models**</a> | [**Training**](#training) | [**Inference**](#inference) | <a href="https://2060079530708e861d.gradio.live">**Online Demo**</a></div></font>
 
+
+## USAGE EXAMPLES
 <p align="center"> <img src="imgs/demo-harry-potter1.png" width="100%"> </p>
 <p align="center"> <img src="imgs/demo-harry-potter2.png" width="100%"> </p>
 <p align="center"> <img src="imgs/demo-deadth-ends.png" width="100%"> </p>
@@ -32,16 +51,40 @@ In this paper, we speed up the context extension of LLMs in two aspects. On the 
 
 
 ## Highlights
-**LongLoRA** speed up the context extension of pre-trained large language models in both attention-level and weight-level.
-1. The proposed shifted short attention is easy to implement, compatible with Flash-Attention, and not required during inference. 
-2. We release all our models, including models from 7B to 70B, context length from 8k to 100k, including [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft), [LLaMA2-LongLoRA-13B-64k](https://huggingface.co/Yukang/Llama-2-13b-longlora-64k), and [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k).
-3. We build up a long-context QA dataset, LongQA, for supervised fine-tuning (SFT). We release 13B and 70B 32k models with SFT,  [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft). We will further release the dataset in the next month.
+**LongLoRA** speeds up the context extension of pre-trained large language models in both attention-level and weight-level.
+1. The proposed shifted short attention is easy to implement, compatible with Flash-Attention, and is not required during inference. 
+2. We released all our models, including models from 7B to 70B, context length from 8k to 100k, including [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft), [LLaMA2-LongLoRA-13B-64k](https://huggingface.co/Yukang/Llama-2-13b-longlora-64k), and [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k).
+3. We built up a long-context QA dataset, LongQA, for supervised fine-tuning (SFT). We released the 13B and 70B 32k models with SFT,  [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft). We will further release the dataset in the next month.
 
-## Installation
+
+## How to Contribute
+- Make sure to have git installed.
+- Create your own [fork](https://github.com/dvlab-research/LongLoRA/fork) of the project.
+- Clone the repository on your local machine, using git clone and pasting the url of this project.
+- Read both the `Requirements` and `Installation and Quick Guide` sections below.
+- Commit and push your changes.
+- Make a pull request when finished modifying the project.
+
+
+## Usage Requirements
+To download and use the [pre-trained weights](#pre-trained-weights) you will need:
+1. Hugging Face (HF) account with valid email. Note, the email used for HF must alse be used for the license agreement.
+2. Accept the Meta [license and acceptable use policy](https://ai.meta.com/resources/models-and-libraries/llama-downloads/) 
+
+
+## Installation and Quick Guide
+To install and run the application:
+1. [Fork this repo](https://github.com/dvlab-research/LongLoRA/fork) on github
+2. Clone the repository on your local machine, using git clone and pasting the url of this project.
+3. Run the following code:
 ```
 pip install -r requirements.txt
 pip install flash-attn --no-build-isolation
 ```
+4. Use either a [Released model](#released-models) or [Fine tune](#fine-tuning) a model to fit your preferences.
+5. Test your model by chat.
+6. Deploy your own demo.
+
 
 ## Released models
 
@@ -77,7 +120,14 @@ pip install flash-attn --no-build-isolation
 
 ## Training
 ### Pre-trained weights
-We use LLaMA2 models as the pre-trained weights and fine-tune them to long context window sizes. Please download [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf), [Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf), and [Llama-2-70b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf), based on your choices.
+We use LLaMA2 models as the pre-trained weights and fine-tune them to long context window sizes. Download based on your choices.
+
+| Pre-trained weights                                                           |
+|:-------------------------------------------------------------------------------------|
+| [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)      |
+|[Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf)     |
+| [Llama-2-70b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf)     |
+
 
 ### Fine-tuning
 ```
@@ -220,8 +270,7 @@ python3 inference.py  \
         --material_type $material_type \
         --material_title $material_title
 ```
-
-For example, if we want to ask a question related to a book:
+To ask a question related to a book:
 ```
 python3 inference.py  \
         --base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
@@ -235,7 +284,7 @@ python3 inference.py  \
 ```
 Note that you can ignore `material_type` or `material_title`.
 
-If we want to ask a question related to a paper:
+To ask a question related to a paper:
 ```
 python3 inference.py  \
         --base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
@@ -248,7 +297,7 @@ python3 inference.py  \
 ```
 
 ## Demo
-If you want to deploy your own demo, you can run the 
+To deploy your own demo run 
 ```
 python3 demo.py  \
 	--base_model path_to_model \
@@ -256,7 +305,7 @@ python3 demo.py  \
 	--max_gen_len $max_gen_len \
 	--flash_attn True
 ```
-For example, 
+Example 
 ```
 python3 demo.py  \
 	--base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
@@ -287,3 +336,5 @@ If you find this project useful in your research, please consider citing:
 - Some evaluation code is modified upon [Landmark Attention](https://github.com/epfml/landmark-attention).
 - We use [LongChat](https://github.com/DachengLi1/LongChat) for the retrieval evaluation.
 
+## License
+- LongLoRA is licensed under the Apache License 2.0. This means that it requires the preservation of copyright and license notices.
