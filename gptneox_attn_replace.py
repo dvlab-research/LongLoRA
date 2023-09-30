@@ -132,6 +132,7 @@ def get_forward_function(use_flash_attn=True, use_full=False):
             query = shift(query, self.num_attention_heads, self.head_size).contiguous()
             key = shift(key, self.num_attention_heads, self.head_size).contiguous()
             value = shift(value, self.num_attention_heads, self.head_size).contiguous()
+            attention_mask = attention_mask[:, :, :group_size, :group_size].repeat(num_group, 1, 1, 1)
 
         # Compute attention
         if use_flash_attn:
