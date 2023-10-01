@@ -8,7 +8,7 @@
 2. [Abstract](#abstract)
 3. [Highlights](#highlights)
 4. [How to contribute](#how-to-contribute)
-5. [Requirements](#requirements)
+5. [Requirements](#usage-requirements)
 6. [Installation and quick guide](#installation-and-quick-guide)
 7. [Released Models](#released-models)
 8. [Training](#training)
