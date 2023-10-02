@@ -110,7 +110,7 @@ def process_pdf(pdf_file, outputs_dir, config_file):
 
     book_results = []
     for page_num, image in tqdm(enumerate(images, start=1), desc=f"Processing {book_name}", leave=False):
-        image_path = os.path.join(tmp_dir, f"{book_name}-{page_num}.png")
+        image_path = os.path.join(tmp_dir, f"{book_base_name}-{page_num}.png")
         image.save(image_path)
 
         start_time = time.time()
