@@ -291,12 +291,13 @@ def train():
         # enable trainable params
         [p.requires_grad_() for n, p in model.named_parameters() if any([k in n for k in training_args.trainable_params.split(",")])]
 
-    model.config.use_cache = False         # required for gradient checkpointing
-    model.enable_input_require_grads()     # required for gradient checkpointing
-    model.gradient_checkpointing_enable()  # enable gradient checkpointing
+    with torch.cuda.amp.autocast(dtype=model.dtype):
+        model.config.use_cache = False         # required for gradient checkpointing
+        model.enable_input_require_grads()     # required for gradient checkpointing
+        model.gradient_checkpointing_enable()  # enable gradient checkpointing
 
-    trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
-    trainer.train()
+        trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
+        trainer.train()
     trainer.save_state()
     trainer.save_model(output_dir=training_args.output_dir)
 
