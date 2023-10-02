@@ -157,7 +157,7 @@ def process_pdf(pdf_file, outputs_dir, config_file):
         print(f"ocr time: {end_time - start_time} s")
 
     results[book_name] = book_results
-    with open(os.path.join(txt_dir, f"{book_name}.txt"), 'w') as f:
+    with open(os.path.join(txt_dir, f"{book_base_name}.txt"), 'w') as f:
         f.write('\n'.join(book_results))
 
     # delete tmp dir
