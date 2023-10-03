@@ -207,7 +207,7 @@ def build_generator(
 
 def main(args):
     if args.flash_attn:
-        replace_llama_attn()
+        replace_llama_attn(inference=True)
 
     # Set RoPE scaling factor
     config = transformers.AutoConfig.from_pretrained(
