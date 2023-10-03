@@ -94,7 +94,8 @@ def process_pdf(pdf_file, outputs_dir, config_file):
     reader = easyocr.Reader(['en'], gpu=True)
 
     book_name = os.path.splitext(pdf_file)[0]
-    txt_file_path = os.path.join(txt_dir, f"{book_name}.txt")
+    book_base_name = os.path.basename(pdf_file)
+    txt_file_path = os.path.join(txt_dir, f"{book_base_name}.txt")
     if os.path.exists(txt_file_path):
         raise ValueError(f"Skipping {book_name} as it already exists in the output directory.")
 
@@ -109,7 +110,7 @@ def process_pdf(pdf_file, outputs_dir, config_file):
 
     book_results = []
     for page_num, image in tqdm(enumerate(images, start=1), desc=f"Processing {book_name}", leave=False):
-        image_path = os.path.join(tmp_dir, f"{book_name}-{page_num}.png")
+        image_path = os.path.join(tmp_dir, f"{book_base_name}-{page_num}.png")
         image.save(image_path)
 
         start_time = time.time()
@@ -156,7 +157,7 @@ def process_pdf(pdf_file, outputs_dir, config_file):
         print(f"ocr time: {end_time - start_time} s")
 
     results[book_name] = book_results
-    with open(os.path.join(txt_dir, f"{book_name}.txt"), 'w') as f:
+    with open(os.path.join(txt_dir, f"{book_base_name}.txt"), 'w') as f:
         f.write('\n'.join(book_results))
 
     # delete tmp dir
