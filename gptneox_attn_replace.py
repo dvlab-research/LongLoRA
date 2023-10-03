@@ -5,7 +5,9 @@ import warnings
 import torch
 import transformers
 
-from flash_attn import flash_attn_varlen_func
+from einops import rearrange
+from flash_attn import flash_attn_varlen_qkvpacked_func
+from flash_attn.bert_padding import unpad_input, pad_input
 
 
 group_size_ratio = 1/4
@@ -25,45 +27,22 @@ def apply_rotary_pos_emb(q, k, cos, sin, position_ids):
     k_embed = (k * cos) + (rotate_half(k) * sin)
     return q_embed, k_embed
 
+
 def _flash_attn(query, key, value, attention_mask=None, head_mask=None):
-    # Flash attention codes from
-    # https://github.com/HazyResearch/flash-attention/blob/main/flash_attn/flash_attention.py
+    # transform the data into the qkv packed form
+    qkv = torch.stack(
+        [query, key, value], dim=2
+    ) # [bsz, nh, 3, q_len, hd]
+    qkv = qkv.transpose(1, 3) # [bsz, q_len, 3, nh, hd]
+    bsz, q_len = qkv.shape[:2]
 
-    # q, k, v: [bs, nh, seq_len, hd]
-    batch_size, num_attention_heads, query_length, attn_head_size = query.size()
-    key_length = key.size(-2)
-    value_length = value.size(-2)
+    qkv = rearrange(qkv, "b s ... -> (b s) ...")
+    cu_q_lens = torch.arange(0, (bsz + 1) * q_len, step=q_len, dtype=torch.int32, device=qkv.device)
+    output = flash_attn_varlen_qkvpacked_func(qkv, cu_q_lens, q_len, 0.0, softmax_scale=None, causal=True)
+    output = rearrange(output, "(b s) ... -> b s ...", b=bsz)
 
-    # q, k, v: [bs, nh, seq_len, hd] -> [bs, seq_len, nh, hd] -> [bs * seq_len, nh, hd]
-    query = query.transpose(1, 2).reshape(batch_size * query_length , num_attention_heads, attn_head_size)
-    key = key.transpose(1, 2).reshape(batch_size * key_length, num_attention_heads, attn_head_size)
-    value = value.transpose(1, 2).reshape(batch_size * value_length, num_attention_heads, attn_head_size)
-
-    attn_dropout = 0.0  # TODO: attach to config
-
-    cu_seqlens_q = torch.arange(
-        0,
-        (batch_size + 1) * query_length,
-        step=query_length,
-        dtype=torch.int32,
-        device=query.device,
-    )
-
-    cu_seqlens_k = torch.arange(
-        0,
-        (batch_size + 1) * key_length,
-        step=key_length,
-        dtype=torch.int32,
-        device=key.device,
-    )
-
-    attn_output, attn_weights, _ = flash_attn_varlen_func(
-        query, key, value, cu_seqlens_q, cu_seqlens_k, query_length, value_length, dropout_p=attn_dropout,
-        softmax_scale=None, causal=True, return_attn_probs=True
-    )
-
-    attn_output = attn_output.view(batch_size, query_length, num_attention_heads, attn_head_size).transpose(1, 2)
-    return attn_output, attn_weights
+	# disable attn weights by returning None when using flash attention
+	return output, None
 
 
 def get_forward_function(use_flash_attn=True, use_full=False):
