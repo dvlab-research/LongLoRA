@@ -109,7 +109,7 @@ def main(args):
     if torch.__version__ >= "2" and sys.platform != "win32":
         model = torch.compile(model)
     respond = build_generator(model, tokenizer, temperature=args.temperature, top_p=args.top_p,
-                              max_gen_len=args.max_gen_len, use_cache=not args.flash_attn)
+                              max_gen_len=args.max_gen_len, use_cache=True)
 
     output = respond(args.material, args.question, args.material_type, args.material_title)
     print("output", output)
