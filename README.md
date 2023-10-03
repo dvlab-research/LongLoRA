@@ -20,6 +20,7 @@
 14. [License](#license)
       
 ## News
+- [x] [2023.10.3] We add support GPTNeoX models. Please refer to this [PR](https://github.com/dvlab-research/LongLoRA/pull/32) for usage. Thanks for @naubull2 for this contribution.
 - [x] [2023.9.22] We release our **13B and 70B 32k models with the supervised fine-tuning**, which is feasible for long context QA. Please check [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft). To our best knowledge, **this is the first work that release 70B model with 32k context length**.
 - [x] [2023.9.22] We release all our fine-tuned [models](https://huggingface.co/Yukang), including **70B-32k models**, [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k), [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft). Welcome to check them out!
 - [x] [2023.9.22] We release [Paper](http://arxiv.org/abs/2309.12307) and this GitHub repo, including training and evaluation code.
@@ -128,6 +129,7 @@ We use LLaMA2 models as the pre-trained weights and fine-tune them to long conte
 |[Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf)     |
 | [Llama-2-70b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf)     |
 
+This project also supports GPTNeoX models as the base model architecture. Some candidate pre-trained weights may include [GPT-NeoX-20B](https://huggingface.co/EleutherAI/gpt-neox-20b), [Polyglot-ko-12.8B](https://huggingface.co/EleutherAI/polyglot-ko-12.8b) and other variants.
 
 ### Fine-tuning
 ```
@@ -332,6 +334,7 @@ If you find this project useful in your research, please consider citing:
 
 ## Acknowledgement
 -  This work is built upon the [LLaMA2](https://ai.meta.com/llama) as the pre-trained models.
+-  This work can also be built upon the [GPTNeoX-HF](https://huggingface.co/docs/transformers/model_doc/gpt_neox) which is based upon [EleutherAI/GPTNeoX](https://github.com/EleutherAI/gpt-neox) as the pre-trained model architecture.
 - This work is based on [DeepSpeed](https://github.com/microsoft/DeepSpeed), [peft](https://github.com/huggingface/peft), and [Flash-Attention2](https://github.com/Dao-AILab/flash-attention) for acceleration.
 - Some evaluation code is modified upon [Landmark Attention](https://github.com/epfml/landmark-attention).
 - We use [LongChat](https://github.com/DachengLi1/LongChat) for the retrieval evaluation.
