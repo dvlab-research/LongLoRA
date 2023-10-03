@@ -41,8 +41,8 @@ def _flash_attn(query, key, value, attention_mask=None, head_mask=None):
     output = flash_attn_varlen_qkvpacked_func(qkv, cu_q_lens, q_len, 0.0, softmax_scale=None, causal=True)
     output = rearrange(output, "(b s) ... -> b s ...", b=bsz)
 
-	# disable attn weights by returning None when using flash attention
-	return output, None
+    # disable attn weights by returning None when using flash attention
+    return output, None
 
 
 def get_forward_function(use_flash_attn=True, use_full=False):
