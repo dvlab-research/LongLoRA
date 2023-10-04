@@ -113,7 +113,7 @@ def forward_flashattn(
         x_unpad, "nnz (three h d) -> nnz three h d", three=3, h=nheads
     )
     output_unpad = flash_attn_varlen_qkvpacked_func(
-        x_unpad, cu_q_lens, max_s, 0.0, softmax_scale=None, causal=True
+        x_unpad, cu_q_lens, group_size, 0.0, softmax_scale=None, causal=True
     )
     output = rearrange(
         pad_input(
