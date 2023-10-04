@@ -117,10 +117,10 @@ def forward_flashattn(
     )
     output = rearrange(
         pad_input(
-            rearrange(output_unpad, "nnz h d -> nnz (h d)"), indices, bsz * num_group if self.training else bsz, group_size if self.training else q_len
+            rearrange(output_unpad, "nnz h d -> nnz (h d)"), indices, bsz * 2, q_len
         ),
         "b s (h d) -> b s h d",
-        h=nheads,
+        h=nheads // 2,
     )
     output = output.reshape(bsz, 2, q_len, nheads // 2, self.head_dim).transpose(1, 2).reshape(bsz, q_len, nheads,
                                                                                                self.head_dim)
