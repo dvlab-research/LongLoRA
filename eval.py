@@ -128,7 +128,7 @@ def main(args):
     print("peft model", args.peft_model)
 
     if args.flash_attn:
-        replace_llama_attn()
+        replace_llama_attn(use_flash_attn=True, use_full=True)
 
     # Set RoPE scaling factor
     config = transformers.AutoConfig.from_pretrained(
