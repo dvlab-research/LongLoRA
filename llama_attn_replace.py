@@ -110,7 +110,7 @@ def forward_flashattn(
     cu_q_lens = torch.cat([cu_q_len_tmp, cu_q_lens[1:].unsqueeze(-1)], dim=-1).view(-1)
 
     x_unpad = rearrange(
-        x_unpad, "nnz (three h d) -> nnz three h d", three=3, h=nheads
+        x_unpad, "nnz (three h d) -> nnz three h d", three=3, h=nheads // 2
     )
     output_unpad = flash_attn_varlen_qkvpacked_func(
         x_unpad, cu_q_lens, group_size, 0.0, softmax_scale=None, causal=True
