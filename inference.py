@@ -8,16 +8,19 @@ import transformers
 from peft import PeftModel
 from transformers import GenerationConfig
 from llama_attn_replace import replace_llama_attn
-from queue import Queue
-from threading import Thread
-import gradio as gr
+
+PROMPT_DICT = {
+    "prompt_no_input": (
+        "Below is an instruction that describes a task. "
+        "Write a response that appropriately completes the request.\n\n"
+        "### Instruction:\n{instruction}\n\n### Response:"
+    ),
+}
 
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--question', type=str, default="")
     parser.add_argument('--material', type=str, default="")
-    parser.add_argument('--material_title', type=str, default="")
-    parser.add_argument('--material_type', type=str, default="material")
+    parser.add_argument('--question', type=str, default="")
     parser.add_argument('--base_model', type=str, default="/data1/pretrained-models/llama-7b-hf")
     parser.add_argument('--cache_dir', type=str, default="./cache")
     parser.add_argument('--context_size', type=int, default=-1, help='context size during fine-tuning')
@@ -27,19 +30,6 @@ def parse_config():
     parser.add_argument('--max_gen_len', type=int, default=512, help='')
     args = parser.parse_args()
     return args
-
-def format_prompt(material, message, material_type="book", material_title=""):
-    if material_type == "paper":
-        prompt = f"Below is a paper. Memorize the material and answer my question after the paper.\n {material} \n "
-    elif material_type == "book":
-        material_title = ", %s"%material_title if len(material_title)>0 else ""
-        prompt = f"Below is some paragraphs in the book{material_title}. Memorize the content and answer my question after the book.\n {material} \n "
-    else:
-        prompt = f"Below is a material. Memorize the material and answer my question after the material. \n {material} \n "
-    message = str(message).strip()
-    prompt += f"Now the material ends. {message}"
-
-    return prompt
 
 def read_txt_file(material_txt):
     if not material_txt.split(".")[-1]=='txt':
@@ -53,9 +43,7 @@ def read_txt_file(material_txt):
 def build_generator(
     model, tokenizer, temperature=0.6, top_p=0.9, max_gen_len=4096, use_cache=True
 ):
-    def response(material, question, material_type="", material_title=None):
-        material = read_txt_file(material)
-        prompt = format_prompt(material, question, material_type, material_title)
+    def response(prompt):
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
         output = model.generate(
@@ -111,7 +99,11 @@ def main(args):
     respond = build_generator(model, tokenizer, temperature=args.temperature, top_p=args.top_p,
                               max_gen_len=args.max_gen_len, use_cache=True)
 
-    output = respond(args.material, args.question, args.material_type, args.material_title)
+    material = read_txt_file(args.material)
+    prompt_no_input = PROMPT_DICT["prompt_no_input"]
+    prompt = prompt_no_input.format_map({"instruction": material + "\n%s"%args.question})
+
+    output = respond(prompt=prompt)
     print("output", output)
 
 if __name__ == "__main__":
