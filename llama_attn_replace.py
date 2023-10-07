@@ -16,6 +16,7 @@ from flash_attn.flash_attn_interface import (
 )
 from transformers.models.llama.modeling_llama import apply_rotary_pos_emb, repeat_kv, rotate_half
 from flash_attn.bert_padding import unpad_input, pad_input
+import math
 
 group_size_ratio = 1/4
 def forward_flashattn(
