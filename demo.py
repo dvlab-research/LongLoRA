@@ -8,6 +8,7 @@ import transformers
 from peft import PeftModel
 from transformers import GenerationConfig, TextIteratorStreamer
 from llama_attn_replace import replace_llama_attn
+from threading import Thread
 import gradio as gr
 
 
@@ -92,7 +93,7 @@ def build_generator(
             return "This demo supports tokens less than 32768, while the current is %d. Please use material with less tokens."%len(inputs['input_ids'][0])
         torch.cuda.empty_cache()
         
-        streamer = TextIteratorStreamer(tokenizer)
+        streamer = TextIteratorStreamer(tokenizer, skip_prompt=True)
         generate_kwargs = dict(**inputs,
             max_new_tokens=max_gen_len,
             temperature=temperature,
