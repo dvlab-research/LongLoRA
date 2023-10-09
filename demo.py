@@ -6,7 +6,7 @@ import argparse
 import textwrap
 import transformers
 from peft import PeftModel
-from transformers import GenerationConfig
+from transformers import GenerationConfig, TextStreamerIterator
 from llama_attn_replace import replace_llama_attn
 import gradio as gr
 
@@ -46,74 +46,6 @@ Hope you can enjoy our work!
 """
 
 # Gradio
-examples = [
-    [
-        "./materials/The Three-Body Problem_section3.txt",
-        "Please describe the relationship among the roles in the book.",
-    ],
-    [
-        "./materials/Death’s End_section9.txt",
-        "Please tell me that what high-level idea the author want to indicate in this book.",
-    ],
-    [
-        "./materials/Death’s End_section12.txt",
-        "What responsibility do we as individuals have to make moral choices that benefit the greater good of humanity and the universe?",
-    ],
-
-    [
-        "./materials/Journey to the West_section13.txt",
-        "How does Monkey's character change over the course of the journey?",
-    ],
-    [
-        "./materials/Journey to the West_section33.txt",
-        "Please tell me that what high-level idea the author want to indicate in this book.",
-    ],
-    [
-        "./materials/Dream of the Red Chamber_section17.txt",
-        "Please tell me that what high-level idea the author want to indicate in this book.",
-    ],
-
-    [
-        "./materials/Harry Potter and the Philosophers Stone_section2.txt",
-        "Why doesn't Professor Snape seem to like Harry?",
-    ],
-    [
-        "./materials/Harry Potter The Chamber of Secrets_section2.txt",
-        "Please describe the relationship among the roles in the book.",
-    ],
-
-    [
-        "./materials/Don Quixote_section3.txt",
-        "What theme does Don Quixote represent in the story?",
-    ],
-
-    [
-        "./materials/The Lord Of The Rings 2 - The Two Towers_section3.txt",
-        "What does this passage reveal about Gandalf's character and role?",
-    ],
-
-    [
-        "./materials/paper_1.txt",
-        "What are the main contributions and novelties of this work?",
-    ],
-    [
-        "./materials/paper_2.txt",
-        "Please summarize the paper in one paragraph.",
-    ],
-    [
-        "./materials/paper_3.txt",
-        "What are some limitations of the proposed 3DGNN method?",
-    ],
-    [
-        "./materials/paper_4.txt",
-        "What is the main advantage of the authors' energy optimization based texture design method compared to other existing texture synthesis techniques?",
-    ],
-    [
-        "./materials/paper_5.txt",
-        "What are some best practices for effectively eliciting software requirements?",
-    ],
-]
-
 article = """
 <p style='text-align: center'>
 <a href='https://arxiv.org/abs/2308.00692' target='_blank'>
@@ -159,19 +91,24 @@ def build_generator(
         if len(inputs['input_ids'][0]) > 32768:
             return "This demo supports tokens less than 32768, while the current is %d. Please use material with less tokens."%len(inputs['input_ids'][0])
         torch.cuda.empty_cache()
-
-        output = model.generate(
-            **inputs,
+        
+        streamer = TextStreamerIterator(tokenizer)
+        generate_kwargs = dict(**inputs,
             max_new_tokens=max_gen_len,
             temperature=temperature,
             top_p=top_p,
-            use_cache=use_cache
-        )
-        out = tokenizer.decode(output[0], skip_special_tokens=True)
+            use_cache=use_cache,
+            streamer=streamer,
+            )
 
-        out = out.split(prompt)[1].strip()
-        print("out", out)
-        return out
+        t = Thread(target=model.generate, kwargs=generate_kwargs)
+        t.start()
+        
+        generated_text = ""
+        for new_text in streamer:
+            generated_text += new_text
+            yield generated_text
+        return generated_text
 
     return response
 
@@ -227,7 +164,6 @@ def main(args):
         title=title,
         description=description,
         article=article,
-        examples=examples,
         allow_flagging="auto",
     )
 
