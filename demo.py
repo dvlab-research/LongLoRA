@@ -8,8 +8,6 @@ import transformers
 from peft import PeftModel
 from transformers import GenerationConfig
 from llama_attn_replace import replace_llama_attn
-from queue import Queue
-from threading import Thread
 import gradio as gr
 
 
@@ -25,7 +23,7 @@ def parse_config():
     args = parser.parse_args()
     return args
 
-title = "LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models"
+title = "LongLoRA and LongAlpaca for Long-context LLMs"
 
 description = """
 <font size=4>
@@ -33,10 +31,8 @@ This is the online demo of LongLoRA. \n
 If multiple users are using it at the same time, they will enter a queue, which may delay some time. \n
 **Inputs**: <br>
 - **Input material txt** and **Question** are required. <br>
-- **Material Type** is optional. It can be book, paper, or others. <br>
-- **Material Title** is optional. It can be the tile of the book.\n
 **Note**: <br>
-- The demo model is **Llama-2-13b-chat-longlora-32k-sft**. We use 8-bit quantization for low GPU memory inference, which may impair text-generation quality.<br> 
+- The demo model is **LongAlpaca-7B**. We use 4-bit quantization for low GPU memory inference, which may impair text-generation quality.<br> 
 - There are 10 book-related examples and 5 paper-related examples, 15 in total.<br>
 - Note that only txt file is currently support.\n
 **Example questions**: <br>
@@ -54,97 +50,67 @@ examples = [
     [
         "./materials/The Three-Body Problem_section3.txt",
         "Please describe the relationship among the roles in the book.",
-        "book",
-        "The Three-Body Problem"
     ],
     [
         "./materials/Death’s End_section9.txt",
         "Please tell me that what high-level idea the author want to indicate in this book.",
-        "book",
-        "Death’s End"
     ],
     [
         "./materials/Death’s End_section12.txt",
         "What responsibility do we as individuals have to make moral choices that benefit the greater good of humanity and the universe?",
-        "book",
-        "Death’s End"
     ],
 
     [
         "./materials/Journey to the West_section13.txt",
         "How does Monkey's character change over the course of the journey?",
-        "book",
-        "Journey to the West"
     ],
     [
         "./materials/Journey to the West_section33.txt",
         "Please tell me that what high-level idea the author want to indicate in this book.",
-        "book",
-        "Journey to the West"
     ],
     [
         "./materials/Dream of the Red Chamber_section17.txt",
         "Please tell me that what high-level idea the author want to indicate in this book.",
-        "book",
-        "Dream of the Red Chamber"
     ],
 
     [
         "./materials/Harry Potter and the Philosophers Stone_section2.txt",
         "Why doesn't Professor Snape seem to like Harry?",
-        "book",
-        "Harry Potter and the Philosophers Stone"
     ],
     [
         "./materials/Harry Potter The Chamber of Secrets_section2.txt",
         "Please describe the relationship among the roles in the book.",
-        "book",
-        "Harry Potter The Chamber of Secrets"
     ],
 
     [
         "./materials/Don Quixote_section3.txt",
         "What theme does Don Quixote represent in the story?",
-        "book",
-        "Don Quixote"
     ],
 
     [
         "./materials/The Lord Of The Rings 2 - The Two Towers_section3.txt",
         "What does this passage reveal about Gandalf's character and role?",
-        "book",
-        "The Lord Of The Rings 2 - The Two Towers"
     ],
 
     [
         "./materials/paper_1.txt",
         "What are the main contributions and novelties of this work?",
-        "paper",
-        ""
     ],
     [
         "./materials/paper_2.txt",
         "Please summarize the paper in one paragraph.",
-        "paper",
-        ""
     ],
     [
         "./materials/paper_3.txt",
         "What are some limitations of the proposed 3DGNN method?",
-        "paper",
-        ""
     ],
     [
         "./materials/paper_4.txt",
         "What is the main advantage of the authors' energy optimization based texture design method compared to other existing texture synthesis techniques?",
-        "paper",
-        ""
     ],
     [
         "./materials/paper_5.txt",
         "What are some best practices for effectively eliciting software requirements?",
-        "paper",
-        ""
     ],
 ]
 
@@ -158,18 +124,14 @@ Preprint Paper
 <a href='https://github.com/dvlab-research/LongLoRA' target='_blank'>   Github Repo </a></p>
 """
 
-def format_prompt(material, message, material_type="book", material_title=None):
-    if material_type == "paper":
-        prompt = f"Below is a paper. Memorize the material and answer my question after the paper.\n {material} \n "
-    elif material_type == "book":
-        material_title = ", %s"%material_title if not material_title is None else ""
-        prompt = f"Below is some paragraphs in the book{material_title}. Memorize the content and answer my question after the book.\n {material} \n "
-    else:
-        prompt = f"Below is a material. Memorize the material and answer my question after the material. \n {material} \n "
-    message = str(message).strip()
-    prompt += f"Now the material ends. {message}"
+PROMPT_DICT = {
+    "prompt_no_input": (
+        "Below is an instruction that describes a task. "
+        "Write a response that appropriately completes the request.\n\n"
+        "### Instruction:\n{instruction}\n\n### Response:"
+    ),
+}
 
-    return prompt
 
 def read_txt_file(material_txt):
     content = ""
@@ -181,16 +143,23 @@ def read_txt_file(material_txt):
 def build_generator(
     model, tokenizer, temperature=0.6, top_p=0.9, max_gen_len=4096, use_cache=True
 ):
-    def response(material, question, material_type="", material_title=None):
+    def response(material, question):
+        if material is None:
+            return "Only support txt file."
+
         if not material.name.split(".")[-1]=='txt':
             return "Only support txt file."
 
         material = read_txt_file(material.name)
-        prompt = format_prompt(material, question, material_type, material_title)
+        prompt_no_input = PROMPT_DICT["prompt_no_input"]
+        prompt = prompt_no_input.format_map({"instruction": material + "\n%s" % question})
+
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
         if len(inputs['input_ids'][0]) > 32768:
             return "This demo supports tokens less than 32768, while the current is %d. Please use material with less tokens."%len(inputs['input_ids'][0])
+        torch.cuda.empty_cache()
+
         output = model.generate(
             **inputs,
             max_new_tokens=max_gen_len,
@@ -201,6 +170,7 @@ def build_generator(
         out = tokenizer.decode(output[0], skip_special_tokens=True)
 
         out = out.split(prompt)[1].strip()
+        print("out", out)
         return out
 
     return response
@@ -226,6 +196,7 @@ def main(args):
         config=config,
         cache_dir=args.cache_dir,
         torch_dtype=torch.float16,
+        load_in_4bit=True,
         device_map="auto",
     )
     model.resize_token_embeddings(32001)
@@ -249,8 +220,6 @@ def main(args):
         inputs=[
             gr.File(type="file", label="Input material txt"),
             gr.Textbox(lines=1, placeholder=None, label="Question"),
-            gr.Textbox(value="book", lines=1, placeholder=None, label="Material Type"),
-            gr.Textbox(value=None, lines=1, placeholder=None, label="Material Title"),
         ],
         outputs=[
             gr.Textbox(lines=1, placeholder=None, label="Text Output"),
@@ -260,7 +229,6 @@ def main(args):
         article=article,
         examples=examples,
         allow_flagging="auto",
-        #server_name="0.0.0.0"
     )
 
     demo.queue()
