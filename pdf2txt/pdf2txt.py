@@ -138,7 +138,7 @@ def process_pdf(pdf_file, outputs_dir, config_file):
             label = MetadataCatalog.get(cfg.DATASETS.TEST[0]).thing_classes[label_id]
             cropped_image_np = np.array(image.crop(bbox))
 
-            if label in ['text', 'list', 'title']:
+            if label in ['figure', 'table', 'text', 'list', 'title']:
                 #reader = easyocr.Reader(['en'], cudnn_benchmark=True)
                 ocr_result = reader.readtext(cropped_image_np, batch_size=10)
                 extracted_text = ' '.join([item[1] for item in ocr_result])
