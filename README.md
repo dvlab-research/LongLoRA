@@ -33,7 +33,7 @@
 15. [License](#license)
       
 ## News
-- [x] [2023.10.8] **We release the long instruction-following dataset**, [LongAlpaca-12k](https://drive.google.com/file/d/1JVC1p_Ht-1h61tKitOCW0blnCHf-552U/view?usp=share_link) and **the corresponding models**, [LongAlpaca-7B](https://huggingface.co/Yukang/LongAlpaca-7B), [LongAlpaca-13B](https://huggingface.co/Yukang/LongAlpaca-13B), and [LongAlpaca-70B](https://huggingface.co/Yukang/LongAlpaca-70B).
+- [x] [2023.10.8] **We release the long instruction-following dataset**, [LongAlpaca-12k](https://huggingface.co/datasets/Yukang/LongAlpaca-12k) and **the corresponding models**, [LongAlpaca-7B](https://huggingface.co/Yukang/LongAlpaca-7B), [LongAlpaca-13B](https://huggingface.co/Yukang/LongAlpaca-13B), and [LongAlpaca-70B](https://huggingface.co/Yukang/LongAlpaca-70B).
 - (*The previous sft models*, [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft), *have been depreciated*.)
 - [x] [2023.10.3] We add support GPTNeoX models. Please refer to this [PR](https://github.com/dvlab-research/LongLoRA/pull/32) for usage. Thanks for @naubull2 for this contribution.
 - [x] [2023.9.22] We release all our fine-tuned [models](https://huggingface.co/Yukang), including **70B-32k models**, [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k), [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft). Welcome to check them out!
@@ -93,7 +93,7 @@ LongAlpaca-12k contains 9k long QA data that we collected and 3k short QA sample
 
 | Data           | Short QA | Long QA  | Total    | Download |
 |:---------------|----------|----------|----------|----------|
-| LongAlpaca-12k | 3k       | 9k       | 12k      | [Link](https://drive.google.com/file/d/1JVC1p_Ht-1h61tKitOCW0blnCHf-552U/view?usp=share_link) |
+| LongAlpaca-12k | 3k       | 9k       | 12k      | [Link](https://huggingface.co/datasets/Yukang/LongAlpaca-12k) |
 
 Following the original Alpaca format, our Long QA data uses the following prompts for fine-tuning:
 - `instruction`: `str`, describes the task the model should perform. For example, to answer a question after reading a book section or paper. We vary the contents and questions to make instructions diverse.
