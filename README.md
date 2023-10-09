@@ -139,11 +139,14 @@ We did not use the `input` format in the Alpaca format for simplicity.
 ### Pre-trained weights
 We use LLaMA2 models as the pre-trained weights and fine-tune them to long context window sizes. Download based on your choices.
 
-| Pre-trained weights                                                           |
-|:-------------------------------------------------------------------------------------|
-| [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)      |
-|[Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf)     |
-| [Llama-2-70b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf)     |
+| Pre-trained weights                                                        |
+|:---------------------------------------------------------------------------|
+| [Llama-2-7b-hf](https://huggingface.co/meta-llama/Llama-2-7b-hf)           |
+| [Llama-2-13b-hf](https://huggingface.co/meta-llama/Llama-2-13b-hf)         |
+| [Llama-2-70b-hf](https://huggingface.co/meta-llama/Llama-2-70b-hf)         |
+| [Llama-2-7b-chat-hf](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf) |
+| [Llama-2-13b-chat-hf](https://huggingface.co/meta-llama/Llama-2-13b-chat-hf)         |
+| [Llama-2-70b-chat-hf](https://huggingface.co/meta-llama/Llama-2-70b-chat-hf)         |
 
 This project also supports GPTNeoX models as the base model architecture. Some candidate pre-trained weights may include [GPT-NeoX-20B](https://huggingface.co/EleutherAI/gpt-neox-20b), [Polyglot-ko-12.8B](https://huggingface.co/EleutherAI/polyglot-ko-12.8b) and other variants.
 
@@ -188,12 +191,12 @@ cd path_to_saving_checkpoints && python zero_to_fp32.py . pytorch_model.bin
 ### Supervised Fine-tuning
 ```
 torchrun --nproc_per_node=8 supervised-fine-tune.py  \
-        --model_name_or_path path_to_finetuned_models \
+        --model_name_or_path path_to_Llama2_chat_models \
         --bf16 True \
         --output_dir path_to_saving_checkpoints       \
         --model_max_length 32768 \
         --use_flash_attn True \
-        --data_path LongQA.json \
+        --data_path LongAlpaca-12k.json \
         --low_rank_training True \
         --num_train_epochs 3  \
         --per_device_train_batch_size 1     \
@@ -211,8 +214,8 @@ torchrun --nproc_per_node=8 supervised-fine-tune.py  \
         --deepspeed "ds_configs/stage2.json" \
         --tf32 True
 ```
-- We typically make supervised fine-tuning upon the fine-tuned context extended models, `path_to_finetuned_models`, like `Llama-2-13b-longlora-32k` or `Llama-2-13b-longlora-32k-ft`.
-- During our dataset collection, it is hard for us to collect many high-quality QA that are larger than 32768. Thus, if you use our `LongQA.json`, please also set `model_max_length` as 32768.
+- There is no need to make supervised fine-tuning upon the fine-tuned context extended models. It is all right to directly use base model as Llama2-chat models, as the amount of long instruction following data is enough for SFT.
+- Our long instruction following data can be found in [LongAlpaca-12k.json](https://huggingface.co/datasets/Yukang/LongAlpaca-12k).
 
 
 ### Get trainable weights in low-rank training
