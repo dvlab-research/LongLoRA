@@ -93,7 +93,7 @@ def build_generator(
             return "This demo supports tokens less than 32768, while the current is %d. Please use material with less tokens."%len(inputs['input_ids'][0])
         torch.cuda.empty_cache()
         
-        streamer = TextIteratorStreamer(tokenizer, skip_prompt=True)
+        streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)
         generate_kwargs = dict(**inputs,
             max_new_tokens=max_gen_len,
             temperature=temperature,
