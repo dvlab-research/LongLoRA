@@ -5,7 +5,7 @@
 # LongLoRA and LongAlpaca for Long-context LLMs
 
 
-[![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-green)](https://78a4e824c164253ae7.gradio.live)
+[![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-green)](https://f4f278c5cfddb49f36.gradio.live)
 [![Huggingface Models](https://img.shields.io/badge/Models-Huggingface%20Models-bron)](https://huggingface.co/Yukang)
 [![Data](https://img.shields.io/badge/Data-LongAlpaca%2012k-light)](https://huggingface.co/datasets/Yukang/LongAlpaca-12k)
 [![Paper](https://img.shields.io/badge/Paper-Arvix-blue)](https://arxiv.org/abs/2309.12307)
@@ -39,7 +39,7 @@
 - [x] [2023.9.22] We release all our fine-tuned [models](https://huggingface.co/Yukang), including **70B-32k models**, [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k), [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft). Welcome to check them out!
 - [x] [2023.9.22] We release [Paper](http://arxiv.org/abs/2309.12307) and this GitHub repo, including training and evaluation code.
 
-Note: the demo link is not permanent, as the gradio rule. We refresh it every 72h.
+Note: (Updated Oct 9th 4pm in GMT+8) the [demo link](https://f4f278c5cfddb49f36.gradio.live) is not permanent, as the gradio rule. We refresh it every 72h.
 
 **LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models [[Paper](http://arxiv.org/abs/2309.12307)]** <br />
 [Yukang Chen](https://scholar.google.com/citations?user=6p0ygKUAAAAJ&hl=en),
