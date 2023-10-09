@@ -2,7 +2,7 @@
 <img src="imgs/LongAlpaca.png" alt="Stanford-Alpaca" style="width: 100%; min-width: 300px; display: block; margin: auto;">
 </p>
 
-# LongLoRA and LongAlpaca - A Toolbox for Long-context LLMs
+# LongLoRA and LongAlpaca for Long-context LLMs
 
 
 [![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-green)](https://1841bb028d32e8619c.gradio.live)
@@ -17,17 +17,17 @@
 
 ## TABLE OF CONTENTS
 1. [News](#news)
-2. [Examples](#examples)
-3. [Highlights](#highlights)
-4. [How to contribute](#how-to-contribute)
-5. [Requirements](#usage-requirements)
-6. [Installation and quick guide](#installation-and-quick-guide)
-7. [LongAlpaca Data](#longalpaca-data)
-8. [Models](#models)
-9. [Training](#training)
-10. [Evaluation](#evaluation)
-11. [Demo](#demo)
-12. [Data Generation via Pdf2Text](#data-generation-via-pdf2text)
+2. [Highlights](#highlights)
+3. [How to contribute](#how-to-contribute)
+4. [Requirements](#usage-requirements)
+5. [Installation and quick guide](#installation-and-quick-guide)
+6. [LongAlpaca Data](#longalpaca-data)
+7. [Models](#models)
+8. [Training](#training)
+9. [Evaluation](#evaluation)
+10. [Demo](#demo)
+11. [Data Generation via Pdf2Text](#data-generation-via-pdf2text)
+12. [Examples](#examples)
 13. [Citation](#citation)
 14. [Acknowledgement](#acknowledgement)
 15. [License](#license)
@@ -47,16 +47,6 @@
 [Zhijian Liu](https://scholar.google.com/citations?user=3coYSTUAAAAJ&hl=en),
 [Song Han](https://scholar.google.com/citations?user=E0iCaa4AAAAJ&hl=zh-CN),
 [Jiaya Jia](https://scholar.google.com/citations?user=XPAkzTEAAAAJ&hl=en)<br />
-
-## Examples
-<p align="center"> <img src="imgs/paper-improvements.png" width="100%"> </p>
-<p align="center"> <img src="imgs/paper-review.png" width="100%"> </p>
-<p align="center"> <img src="imgs/paper-style-compare-cvpr-iclr.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-compare-journeytothewest.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-compare-harrypotter.png" width="100%"> </p>
-<p align="center"> <img src="imgs/demo-compare-threebody.png" width="100%"> </p>
-<p align="center"> <img src="imgs/economy-comparison.png" width="100%"> </p>
-<p align="center"> <img src="imgs/economy-prediction.png" width="100%"> </p>
 
 ## Highlights
 1. In LongLoRA approach, The proposed shifted short attention is easy to implement, compatible with Flash-Attention, and is not required during inference.
@@ -347,6 +337,16 @@ python3 demo.py  \
 
 ## Data Generation via Pdf2text
 During our dataset collection, we convert paper and books from pdf to text. The conversion quality has a large influence on the final model quality. We think that this step is non-trivial. We release the tool for the pdf2txt conversion, in the folder `pdf2txt`. It is built upon `pdf2image`, `easyocr`, `ditod` and `detectron2`. Please refer to the [README.md](pdf2txt/README.md) in `pdf2txt` for more details.
+
+## Examples
+<p align="center"> <img src="imgs/paper-improvements.png" width="100%"> </p>
+<p align="center"> <img src="imgs/paper-review.png" width="100%"> </p>
+<p align="center"> <img src="imgs/paper-style-compare-cvpr-iclr.png" width="100%"> </p>
+<p align="center"> <img src="imgs/demo-compare-journeytothewest.png" width="100%"> </p>
+<p align="center"> <img src="imgs/demo-compare-harrypotter.png" width="100%"> </p>
+<p align="center"> <img src="imgs/demo-compare-threebody.png" width="100%"> </p>
+<p align="center"> <img src="imgs/economy-comparison.png" width="100%"> </p>
+<p align="center"> <img src="imgs/economy-prediction.png" width="100%"> </p>
 
 ## Citation
 If you find this project useful in your research, please consider citing:
