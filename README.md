@@ -110,7 +110,7 @@ We did not use the `input` format in the Alpaca format for simplicity.
 |:---------------|------|---------|---------|------------------------------------------------------------|
 | LongAlpaca-7B  | 7B   | 32768   | Full FT | [Model](https://huggingface.co/Yukang/LongAlpaca-7B)       |
 | LongAlpaca-13B | 13B  | 32768   | Full FT | [Model](https://huggingface.co/Yukang/LongAlpaca-13B)      |
-| LongAlpaca-70B | 70B  | 32768   | LoRA+ | [Model](https://huggingface.co/Yukang/LongAlpaca-70B-lora) |
+| LongAlpaca-70B | 70B  | 32768   | LoRA+ | [Model](https://huggingface.co/Yukang/LongAlpaca-70B) [(LoRA-weight)](https://huggingface.co/Yukang/LongAlpaca-70B-lora) |
 
 
 ### Models with context extension via fully fine-tuning
