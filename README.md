@@ -7,8 +7,8 @@
 
 [![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-green)](https://1841bb028d32e8619c.gradio.live)
 [![Huggingface Models](https://img.shields.io/badge/Models-Huggingface%20Models-bron)](https://huggingface.co/Yukang)
-[![Paper](https://img.shields.io/badge/Paper-Arvix%20Link-blue)](https://arxiv.org/abs/2309.12307)
-
+[![Data](https://img.shields.io/badge/Data-LongAlpaca%2012k-light)](https://huggingface.co/datasets/Yukang/LongAlpaca-12k)
+[![Paper](https://img.shields.io/badge/Paper-Arvix-blue)](https://arxiv.org/abs/2309.12307)
 
 [![Code License](https://img.shields.io/badge/Code%20License-Apache_2.0-yellow.svg)](https://github.com/dvlab-research/LongLoRA/blob/main/LICENSE)
 [![Data License](https://img.shields.io/badge/Data%20License-CC%20By%20NC%204.0-orange.svg)](https://github.com/dvlab-research/LongLoRA/blob/main/DATA_LICENSE)
