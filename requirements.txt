@@ -14,3 +14,5 @@ peft
 partial
 gradio
 einops
+bitsandbytes
+scipy

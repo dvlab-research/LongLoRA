@@ -6,7 +6,7 @@ import argparse
 import textwrap
 import transformers
 from peft import PeftModel
-from transformers import GenerationConfig
+from transformers import GenerationConfig, TextStreamer
 from llama_attn_replace import replace_llama_attn
 
 PROMPT_DICT = {
@@ -46,13 +46,17 @@ def build_generator(
     def response(prompt):
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
+        streamer = TextStreamer(tokenizer)
+        
         output = model.generate(
             **inputs,
             max_new_tokens=max_gen_len,
             temperature=temperature,
             top_p=top_p,
-            use_cache=use_cache
+            use_cache=use_cache,
+            streamer=streamer,
         )
+        
         out = tokenizer.decode(output[0], skip_special_tokens=True)
 
         out = out.split(prompt)[1].strip()
@@ -104,7 +108,6 @@ def main(args):
     prompt = prompt_no_input.format_map({"instruction": material + "\n%s"%args.question})
 
     output = respond(prompt=prompt)
-    print("output", output)
 
 if __name__ == "__main__":
     args = parse_config()
