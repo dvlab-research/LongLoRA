@@ -41,7 +41,7 @@ DEFAULT_UNK_TOKEN = "<unk>"
 @dataclass
 class ModelArguments:
     model_name_or_path: Optional[str] = field(default="EleutherAI/pythia-1.4b-deduped")
-    model_type: Optional[str] = field(default="gpt-neox")
+    model_type: Optional[str] = field(default="llama")
 
 @dataclass
 class TrainingArguments(transformers.TrainingArguments):
@@ -105,6 +105,7 @@ def train():
     if model_args.model_type == "gpt-neox":
         replace_gpt_neox_attn(training_args.use_flash_attn) 
     else:
+        assert model_args.model_type == "llama", "Only support llama and gpt-neox for now"
         replace_llama_attn(training_args.use_flash_attn)
 
     # Set RoPE scaling factor
@@ -168,7 +169,7 @@ def train():
             # added `dense` to match with llama as the basic LoRA would only target 'query_key_value'
             targets = ["query_key_value", "dense"]
         else:
-            targets=["q_proj", "k_proj", "v_proj", "o_proj"],
+            targets=["q_proj", "k_proj", "v_proj", "o_proj"]
 
         config = LoraConfig(
             r=8,
