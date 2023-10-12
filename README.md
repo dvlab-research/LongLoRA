@@ -283,7 +283,7 @@ python3 passkey_retrivial.py \
 
 ## Demo
 ### Local Inference
-To chat with [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) or [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft), you need to run `merge_lora_weights_and_save_hf_model.py` first, and then:
+To chat with LongAlpaca models, you need to run `merge_lora_weights_and_save_hf_model.py` first, and then:
 ```
 python3 inference.py  \
         --base_model path_to_model \
@@ -292,33 +292,28 @@ python3 inference.py  \
         --max_gen_len $max_gen_len \
         --flash_attn True \
         --material $material_content \
-        --material_type $material_type \
         --material_title $material_title
 ```
 To ask a question related to a book:
 ```
 python3 inference.py  \
-        --base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
+        --base_model /data/models/LongAlpaca-13B \
         --question "Why doesn't Professor Snape seem to like Harry?" \
         --context_size 32768 \
         --max_gen_len 512 \
         --flash_attn True \
-        --material "materials/Harry Potter and the Philosophers Stone_section2.txt" \
-        --material_type "book" \
-        --material_title "Harry Potter and the Philosophers Stone"
+        --material "materials/Harry Potter and the Philosophers Stone_section2.txt"
 ```
-Note that you can ignore `material_type` or `material_title`.
 
 To ask a question related to a paper:
 ```
 python3 inference.py  \
-        --base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
+        --base_model /data/models/LongAlpaca-13B \
         --question "What are the main contributions and novelties of this work?" \
         --context_size 32768 \
         --max_gen_len 512 \
         --flash_attn True \
-        --material "materials/paper1.txt" \
-        --material_type "paper"
+        --material "materials/paper1.txt"
 ```
 
 ### Online Demo
@@ -333,7 +328,7 @@ python3 demo.py  \
 Example 
 ```
 python3 demo.py  \
-	--base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
+	--base_model /data/models/LongAlpaca-13B \
 	--context_size 32768 \
 	--max_gen_len 512 \
 	--flash_attn True
