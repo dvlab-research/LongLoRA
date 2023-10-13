@@ -277,7 +277,7 @@ def train():
             # added `dense` to match with llama as the basic LoRA would only target 'query_key_value'
             targets = ["query_key_value", "dense"]
         else:
-            targets=["q_proj", "k_proj", "v_proj", "o_proj"],
+            targets=["q_proj", "k_proj", "v_proj", "o_proj"]
 
         config = LoraConfig(
             r=8,
