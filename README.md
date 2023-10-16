@@ -283,7 +283,7 @@ python3 passkey_retrivial.py \
 
 ## Demo
 ### Local Inference
-To chat with LongAlpaca models, you need to run `merge_lora_weights_and_save_hf_model.py` first, and then:
+To chat with LongAlpaca models,
 ```
 python3 inference.py  \
         --base_model path_to_model \
@@ -291,8 +291,7 @@ python3 inference.py  \
         --context_size $context_length \
         --max_gen_len $max_gen_len \
         --flash_attn True \
-        --material $material_content \
-        --material_title $material_title
+        --material $material_content
 ```
 To ask a question related to a book:
 ```
