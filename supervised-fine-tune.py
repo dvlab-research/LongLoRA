@@ -66,7 +66,7 @@ PROMPT_DICT = {
 @dataclass
 class ModelArguments:
     model_name_or_path: Optional[str] = field(default="EleutherAI/pythia-1.4b-deduped")
-    model_type: Optional[str] = field(default="gpt-neox")
+    model_type: Optional[str] = field(default="llama")
 
 
 @dataclass
