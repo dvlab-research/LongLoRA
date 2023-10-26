@@ -5,7 +5,7 @@
 # LongLoRA and LongAlpaca for Long-context LLMs
 
 
-[![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-green)](https://1720516327649a610e.gradio.live)
+[![Gradio](https://img.shields.io/badge/Gradio-Online%20Demo-green)](https://9c75b57d724f18f0f0.gradio.live)
 [![Huggingface Models](https://img.shields.io/badge/Models-Huggingface%20Models-bron)](https://huggingface.co/Yukang)
 [![Data](https://img.shields.io/badge/Data-LongAlpaca%2012k-light)](https://huggingface.co/datasets/Yukang/LongAlpaca-12k)
 [![Paper](https://img.shields.io/badge/Paper-Arvix-blue)](https://arxiv.org/abs/2309.12307)
@@ -34,12 +34,12 @@
       
 ## News
 - [x] [2023.10.8] **We release the long instruction-following dataset**, [LongAlpaca-12k](https://huggingface.co/datasets/Yukang/LongAlpaca-12k) and **the corresponding models**, [LongAlpaca-7B](https://huggingface.co/Yukang/LongAlpaca-7B), [LongAlpaca-13B](https://huggingface.co/Yukang/LongAlpaca-13B), and [LongAlpaca-70B](https://huggingface.co/Yukang/LongAlpaca-70B).
-- (*The previous sft models*, [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft), *have been depreciated*.)
+- (*The previous sft models*, [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) and [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft), *have been deprecated*.)
 - [x] [2023.10.3] We add support GPTNeoX models. Please refer to this [PR](https://github.com/dvlab-research/LongLoRA/pull/32) for usage. Thanks for @naubull2 for this contribution.
 - [x] [2023.9.22] We release all our fine-tuned [models](https://huggingface.co/Yukang), including **70B-32k models**, [LLaMA2-LongLoRA-70B-32k](https://huggingface.co/Yukang/Llama-2-70b-longlora-32k), [LLaMA2-LongLoRA-7B-100k](https://huggingface.co/Yukang/Llama-2-7b-longlora-100k-ft). Welcome to check them out!
 - [x] [2023.9.22] We release [Paper](http://arxiv.org/abs/2309.12307) and this GitHub repo, including training and evaluation code.
 
-- [x] (*Updated Oct 9th 4pm in GMT+8*) The [demo link](https://1720516327649a610e.gradio.live) is not permanent. We update it every 72h.
+- [x] (*Updated Oct 12th 10pm in GMT+8*) The [demo link](https://9c75b57d724f18f0f0.gradio.live) is not permanent. We update it every 72h.
 
 **LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models [[Paper](http://arxiv.org/abs/2309.12307)]** <br />
 [Yukang Chen](https://scholar.google.com/citations?user=6p0ygKUAAAAJ&hl=en),
@@ -283,7 +283,7 @@ python3 passkey_retrivial.py \
 
 ## Demo
 ### Local Inference
-To chat with [Llama-2-13b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-13b-chat-longlora-32k-sft) or [Llama-2-70b-chat-longlora-32k-sft](https://huggingface.co/Yukang/Llama-2-70b-chat-longlora-32k-sft), you need to run `merge_lora_weights_and_save_hf_model.py` first, and then:
+To chat with LongAlpaca models,
 ```
 python3 inference.py  \
         --base_model path_to_model \
@@ -291,34 +291,28 @@ python3 inference.py  \
         --context_size $context_length \
         --max_gen_len $max_gen_len \
         --flash_attn True \
-        --material $material_content \
-        --material_type $material_type \
-        --material_title $material_title
+        --material $material_content
 ```
 To ask a question related to a book:
 ```
 python3 inference.py  \
-        --base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
+        --base_model /data/models/LongAlpaca-13B \
         --question "Why doesn't Professor Snape seem to like Harry?" \
         --context_size 32768 \
         --max_gen_len 512 \
         --flash_attn True \
-        --material "materials/Harry Potter and the Philosophers Stone_section2.txt" \
-        --material_type "book" \
-        --material_title "Harry Potter and the Philosophers Stone"
+        --material "materials/Harry Potter and the Philosophers Stone_section2.txt"
 ```
-Note that you can ignore `material_type` or `material_title`.
 
 To ask a question related to a paper:
 ```
 python3 inference.py  \
-        --base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
+        --base_model /data/models/LongAlpaca-13B \
         --question "What are the main contributions and novelties of this work?" \
         --context_size 32768 \
         --max_gen_len 512 \
         --flash_attn True \
-        --material "materials/paper1.txt" \
-        --material_type "paper"
+        --material "materials/paper1.txt"
 ```
 
 ### Online Demo
@@ -333,7 +327,7 @@ python3 demo.py  \
 Example 
 ```
 python3 demo.py  \
-	--base_model /data/models/Llama-2-13b-chat-longlora-32k-sft \
+	--base_model /data/models/LongAlpaca-13B \
 	--context_size 32768 \
 	--max_gen_len 512 \
 	--flash_attn True

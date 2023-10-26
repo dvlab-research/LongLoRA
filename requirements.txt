@@ -2,7 +2,7 @@ numpy
 rouge_score
 fire
 openai
-transformers>=4.28.1
+transformers>=4.31.0
 torch>=2.0
 sentencepiece
 tokenizers>=0.13.3

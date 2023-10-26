@@ -66,7 +66,7 @@ PROMPT_DICT = {
 @dataclass
 class ModelArguments:
     model_name_or_path: Optional[str] = field(default="EleutherAI/pythia-1.4b-deduped")
-    model_type: Optional[str] = field(default="gpt-neox")
+    model_type: Optional[str] = field(default="llama")
 
 
 @dataclass
@@ -277,7 +277,7 @@ def train():
             # added `dense` to match with llama as the basic LoRA would only target 'query_key_value'
             targets = ["query_key_value", "dense"]
         else:
-            targets=["q_proj", "k_proj", "v_proj", "o_proj"],
+            targets=["q_proj", "k_proj", "v_proj", "o_proj"]
 
         config = LoraConfig(
             r=8,
