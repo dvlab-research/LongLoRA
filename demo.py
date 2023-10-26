@@ -21,6 +21,8 @@ def parse_config():
     parser.add_argument('--temperature', type=float, default=0.6, help='')
     parser.add_argument('--top_p', type=float, default=0.9, help='')
     parser.add_argument('--max_gen_len', type=int, default=512, help='')
+    parser.add_argument("--host", type=str, default="localhost")
+    parser.add_argument("--port", type=int, default=8898)
     args = parser.parse_args()
     return args
 
@@ -150,6 +152,7 @@ def main(args):
     model.eval()
     if torch.__version__ >= "2" and sys.platform != "win32":
         model = torch.compile(model)
+    # import pdb; pdb.set_trace()
     respond = build_generator(model, tokenizer, temperature=args.temperature, top_p=args.top_p,
                               max_gen_len=args.max_gen_len, use_cache=True)
 
@@ -169,7 +172,7 @@ def main(args):
     )
 
     demo.queue()
-    demo.launch(show_error=True, share=True)
+    demo.launch(server_name=args.host, server_port=args.port, show_error=True, share=True)
 
 if __name__ == "__main__":
     args = parse_config()
