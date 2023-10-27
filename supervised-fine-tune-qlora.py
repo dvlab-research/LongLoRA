@@ -31,12 +31,29 @@ from llama_attn_replace_sft import replace_llama_attn
 from gptneox_attn_replace import replace_gpt_neox_attn
 from peft import LoraConfig, get_peft_model
 from torch.distributed import barrier
+from peft.tuners.lora import LoraLayer
 
 IGNORE_INDEX = -100
 DEFAULT_PAD_TOKEN = "[PAD]"
 DEFAULT_EOS_TOKEN = "</s>"
 DEFAULT_BOS_TOKEN = "<s>"
 DEFAULT_UNK_TOKEN = "<unk>"
+
+# Copied from https://github.com/philschmid/deep-learning-pytorch-huggingface/blob/main/training/utils/llama_patch.py
+# Adapted from https://github.com/tmm1/axolotl/blob/2eda9e02a9d15a7a3f92b41f257d9844d72fc220/src/axolotl/utils/models.py#L338
+def upcast_layer_for_flash_attention(model, torch_dtype):
+    # LlamaRMSNorm layers are in fp32 after kbit_training, so we need to
+    # convert them back to fp16/bf16 for flash-attn compatibility.
+    for name, module in model.named_modules():
+        if isinstance(module, LoraLayer):
+            module.to(torch_dtype)
+        if "norm" in name:
+            module.to(torch_dtype)
+        if "lm_head" in name or "embed_tokens" in name:
+            if hasattr(module, "weight"):
+                module.to(torch_dtype)
+
+    return model
 
 def _make_r_io_base(f, mode: str):
     if not isinstance(f, io.IOBase):
@@ -303,6 +320,7 @@ def train():
             task_type="CAUSAL_LM",
         )
         model = get_peft_model(model, config)
+        model = upcast_layer_for_flash_attention(model, torch.bfloat16)
         # enable trainable params
         [p.requires_grad_() for n, p in model.named_parameters() if any([k in n for k in training_args.trainable_params.split(",")])]
 
