@@ -110,7 +110,7 @@ def main(args):
                               max_gen_len=args.max_gen_len, use_cache=True)
 
     material = read_txt_file(args.material)
-    prompt_no_input = PROMPT_DICT["prompt_no_input"]
+    prompt_no_input = PROMPT_DICT["prompt_no_input_llama2"]
     prompt = prompt_no_input.format_map({"instruction": material + "\n%s"%args.question})
 
     output = respond(prompt=prompt)
