@@ -1,18 +1,18 @@
-numpy
-rouge_score
-fire
-openai
-transformers>=4.31.0
-torch>=2.0
+numpy==1.26.0
+rouge_score==0.1.2
+fire==0.5.0
+# openai
+transformers==4.34.0
+torch==2.0.0
 sentencepiece
-tokenizers>=0.13.3
-wandb
-accelerate
-datasets
-deepspeed
-peft
-partial
-gradio
-einops
-bitsandbytes
-scipy
+tokenizers==0.14.0
+# wandb
+accelerate==0.23.0
+datasets==2.14.5
+deepspeed==0.10.3
+peft==0.5.0
+# partial
+# gradio
+einops==0.7.0
+bitsandbytes==0.41.1
+scipy==1.11.3
