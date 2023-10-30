@@ -6,7 +6,7 @@ import torch
 import transformers
 
 from einops import rearrange
-from flash_attn import flash_attn_varlen_qkvpacked_func
+from flash_attn import flash_attn_varlen_qkvpacked_func, flash_attn_varlen_func
 from flash_attn.bert_padding import unpad_input, pad_input
 
 
@@ -28,7 +28,7 @@ def apply_rotary_pos_emb(q, k, cos, sin, position_ids):
     return q_embed, k_embed
 
 
-def _flash_attn(query, key, value, attention_mask=None, head_mask=None):
+def _flash_attn_ssa(query, key, value, attention_mask=None, head_mask=None):
     # transform the data into the qkv packed form
     qkv = torch.stack(
         [query, key, value], dim=2
@@ -43,6 +43,41 @@ def _flash_attn(query, key, value, attention_mask=None, head_mask=None):
 
     # disable attn weights by returning None when using flash attention
     return output, None
+
+def _flash_attn_full(query, key, value, attention_mask=None, head_mask=None):
+    # q, k, v: [bs, nh, seq_len, hd]
+    batch_size, num_attention_heads, query_length, attn_head_size = query.size()
+    key_length = key.size(-2)
+    value_length = value.size(-2)
+
+    # q, k, v: [bs, nh, seq_len, hd] -> [bs, seq_len, nh, hd] -> [bs * seq_len, nh, hd]
+    query = query.transpose(1, 2).reshape(batch_size * query_length , num_attention_heads, attn_head_size)
+    key = key.transpose(1, 2).reshape(batch_size * key_length, num_attention_heads, attn_head_size)
+    value = value.transpose(1, 2).reshape(batch_size * value_length, num_attention_heads, attn_head_size)
+
+    cu_seqlens_q = torch.arange(
+        0,
+        (batch_size + 1) * query_length,
+        step=query_length,
+        dtype=torch.int32,
+        device=query.device,
+    )
+
+    cu_seqlens_k = torch.arange(
+        0,
+        (batch_size + 1) * key_length,
+        step=key_length,
+        dtype=torch.int32,
+        device=key.device,
+    )
+
+    attn_output, attn_weights, _ = flash_attn_varlen_func(
+        query, key, value, cu_seqlens_q, cu_seqlens_k, query_length, value_length, dropout_p=0.0,
+        softmax_scale=None, causal=True, return_attn_probs=True
+    )
+
+    attn_output = attn_output.view(batch_size, query_length, num_attention_heads, attn_head_size).transpose(1, 2)
+    return attn_output, attn_weights
 
 
 def get_forward_function(use_flash_attn=True, use_full=False):
@@ -127,6 +162,7 @@ def get_forward_function(use_flash_attn=True, use_full=False):
 
         # Compute attention
         if use_flash_attn:
+            _flash_attn = _flash_attn_full if use_full else _flash_attn_ssa
             attn_output, attn_weights = _flash_attn(query, key, value, attention_mask, head_mask)
         else:
             attn_output, attn_weights = self._attn(query, key, value, attention_mask, head_mask)
