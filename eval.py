@@ -156,6 +156,8 @@ def main(args):
         trainable_params = os.path.join(args.peft_model, "trainable_params.bin")
         if os.path.isfile(trainable_params):
             model.load_state_dict(torch.load(trainable_params, map_location=model.device), strict=False)
+        else:
+            raise ValueError("Trainable input embedding and normalization are required.")
         model = PeftModel.from_pretrained(
             model,
             args.peft_model,
