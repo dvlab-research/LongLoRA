@@ -61,6 +61,18 @@ PROMPT_DICT = {
         "Write a response that appropriately completes the request.\n\n"
         "### Instruction:\n{instruction}\n\n### Response:"
     ),
+    "prompt_no_input_llama2":(
+        "<s>[INST] <<SYS>>\n"
+        "You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n\n"
+        "If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.\n"
+        "<</SYS>> \n\n {instruction} [/INST]"
+    ),
+    "prompt_input_llama2": (
+        "<s>[INST] <<SYS>>\n"
+        "You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n\n"
+        "If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.\n"
+        "<</SYS>> \n\n {instruction} \n{input} [/INST]"
+    )
 }
 
 
@@ -86,6 +98,10 @@ class TrainingArguments(transformers.TrainingArguments):
     use_flash_attn: bool = field(
         default=True,
         metadata={"help": "Whether use flash attention for training."},
+    )
+    use_full_attn: bool = field(
+        default=False,
+        metadata={"help": "Whether to use plain, full-attention for training."},
     )
     low_rank_training: bool = field(
         default=True,
@@ -167,15 +183,12 @@ class SupervisedDataset(Dataset):
         list_data_dict = jload(data_path)
 
         logging.warning("Formatting inputs...")
-        '''
-        prompt_input, prompt_no_input = PROMPT_DICT["prompt_input"], PROMPT_DICT["prompt_no_input"]
+
+        prompt_input, prompt_no_input = PROMPT_DICT["prompt_input_llama2"], PROMPT_DICT["prompt_no_input_llama2"]
         sources = [
             prompt_input.format_map(example) if example.get("input", "") != "" else prompt_no_input.format_map(example)
             for example in list_data_dict
         ]
-        '''
-
-        sources = [example["instruction"] for example in list_data_dict]
 
         targets = [f"{example['output']}{tokenizer.eos_token}" for example in list_data_dict]
 
@@ -224,9 +237,9 @@ def train():
 
     # NOTE: May expand supported model types in the future
     if model_args.model_type == "gpt-neox":
-        replace_gpt_neox_attn(training_args.use_flash_attn) 
+        replace_gpt_neox_attn(training_args.use_flash_attn, training_args.use_full_attn) 
     else:
-        replace_llama_attn(training_args.use_flash_attn)
+        replace_llama_attn(training_args.use_flash_attn, training_args.use_full_attn)
 
     # Set RoPE scaling factor
     config = transformers.AutoConfig.from_pretrained(

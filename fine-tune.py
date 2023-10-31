@@ -55,6 +55,10 @@ class TrainingArguments(transformers.TrainingArguments):
         default=True,
         metadata={"help": "Whether use flash attention for training."},
     )
+    use_full_attn: bool = field(
+        default=False,
+        metadata={"help": "Whether to use plain, full-attention for training."},
+    )
     low_rank_training: bool = field(
         default=True,
         metadata={"help": "Whether use low rank adaptation for training."},
@@ -103,10 +107,10 @@ def train():
 
     # NOTE: May expand supported model types in the future
     if model_args.model_type == "gpt-neox":
-        replace_gpt_neox_attn(training_args.use_flash_attn) 
+        replace_gpt_neox_attn(training_args.use_flash_attn, training_args.use_full_attn) 
     else:
         assert model_args.model_type == "llama", "Only support llama and gpt-neox for now"
-        replace_llama_attn(training_args.use_flash_attn)
+        replace_llama_attn(training_args.use_flash_attn, training_args.use_full_attn)
 
     # Set RoPE scaling factor
     config = transformers.AutoConfig.from_pretrained(
