@@ -246,8 +246,11 @@ def train():
         cache_dir=training_args.cache_dir,
     )
 
+    orig_rope_scaling = getattr(config, "rope_scaling",  {"factor": 1})
+    orig_rope_scaling_factor = orig_rope_scaling["factor"] if "factor" in orig_rope_scaling.keys() else 1
     orig_ctx_len = getattr(config, "max_position_embeddings", None)
-    if orig_ctx_len and training_args.model_max_length > orig_ctx_len:
+    if orig_ctx_len:
+        orig_ctx_len *= orig_rope_scaling_factor
         scaling_factor = float(math.ceil(training_args.model_max_length / orig_ctx_len))
         config.rope_scaling = {"type": "linear", "factor": scaling_factor}
 
