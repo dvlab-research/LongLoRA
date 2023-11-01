@@ -252,8 +252,9 @@ def train():
     orig_ctx_len = getattr(config, "max_position_embeddings", None)
     if orig_ctx_len:
         orig_ctx_len *= orig_rope_scaling_factor
-        scaling_factor = float(math.ceil(training_args.model_max_length / orig_ctx_len))
-        config.rope_scaling = {"type": "linear", "factor": scaling_factor}
+        if training_args.model_max_length > orig_ctx_len:
+            scaling_factor = float(math.ceil(training_args.model_max_length / orig_ctx_len))
+            config.rope_scaling = {"type": "linear", "factor": scaling_factor}
 
     # Load model and tokenizer
     model = transformers.AutoModelForCausalLM.from_pretrained(
