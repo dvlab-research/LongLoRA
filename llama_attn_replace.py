@@ -34,7 +34,7 @@ def forward_flashattn(
     attention_mask: [bsz, q_len]
     """
     if not self.training:
-        warnings.warn("This function should be used just for training as it may exhibit reduced inference performances. For inference, please use forward_flashattn_inference.")
+        warnings.warn("This function should be used just for training as it may exhibit reduced inference performance. For inference, please use forward_flashattn_inference.")
 
     if output_attentions:
         warnings.warn(
