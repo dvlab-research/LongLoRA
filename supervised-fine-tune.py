@@ -188,7 +188,7 @@ class SupervisedDataset(Dataset):
             prompt_input.format_map(example) if example.get("input", "") != "" else prompt_no_input.format_map(example)
             for example in list_data_dict
         ]
-        
+
         targets = [f"{example['output']}{tokenizer.eos_token}" for example in list_data_dict]
 
         logging.warning("Tokenizing inputs... This may take some time...")
@@ -236,7 +236,7 @@ def train():
 
     # NOTE: May expand supported model types in the future
     if model_args.model_type == "gpt-neox":
-        replace_gpt_neox_attn(training_args.use_flash_attn, training_args.use_full_attn) 
+        replace_gpt_neox_attn(training_args.use_flash_attn, training_args.use_full_attn)
     else:
         replace_llama_attn(training_args.use_flash_attn, training_args.use_full_attn)
 
@@ -246,7 +246,9 @@ def train():
         cache_dir=training_args.cache_dir,
     )
 
-    orig_rope_scaling = getattr(config, "rope_scaling",  {"factor": 1})
+    orig_rope_scaling = getattr(config, "rope_scaling", None)
+    if orig_rope_scaling is None:
+        orig_rope_scaling = {"factor": 1}
     orig_rope_scaling_factor = orig_rope_scaling["factor"] if "factor" in orig_rope_scaling.keys() else 1
     orig_ctx_len = getattr(config, "max_position_embeddings", None)
     if orig_ctx_len:
