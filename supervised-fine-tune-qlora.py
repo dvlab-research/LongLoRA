@@ -22,14 +22,22 @@ import logging
 from dataclasses import dataclass, field
 from typing import Dict, Optional, Sequence
 
+os.environ["ACCELERATE_USE_IPEX"] = "1"
+os.environ["ACCELERATE_USE_XPU"] = "1"
+
 import torch
 import torch.nn as nn
 import transformers
 from torch.utils.data import Dataset
-from transformers import Trainer, DataCollatorForLanguageModeling, BitsAndBytesConfig
+# from transformers import Trainer, DataCollatorForLanguageModeling, BitsAndBytesConfig
 from llama_attn_replace_sft import replace_llama_attn
-from gptneox_attn_replace import replace_gpt_neox_attn
-from peft import LoraConfig, get_peft_model
+# from gptneox_attn_replace import replace_gpt_neox_attn
+# from peft import LoraConfig, get_peft_model
+from transformers import Trainer, DataCollatorForLanguageModeling
+from bigdl.llm.transformers import AutoModelForCausalLM
+import intel_extension_for_pytorch as ipex
+from bigdl.llm.transformers.qlora import get_peft_model, prepare_model_for_kbit_training
+from peft import LoraConfig
 from torch.distributed import barrier
 
 IGNORE_INDEX = -100
@@ -37,6 +45,25 @@ DEFAULT_PAD_TOKEN = "[PAD]"
 DEFAULT_EOS_TOKEN = "</s>"
 DEFAULT_BOS_TOKEN = "<s>"
 DEFAULT_UNK_TOKEN = "<unk>"
+
+def get_int_from_env(env_keys, default):
+    """Returns the first positive env value found in the `env_keys` list or the default."""
+    for e in env_keys:
+        val = int(os.environ.get(e, -1))
+        if val >= 0:
+            return val
+    return default
+
+local_rank = get_int_from_env(["LOCAL_RANK","MPI_LOCALRANKID"], "0")
+world_size = get_int_from_env(["WORLD_SIZE","PMI_SIZE"], "1")
+port = get_int_from_env(["MASTER_PORT"], 29500)
+os.environ["LOCAL_RANK"] = str(local_rank)
+os.environ["WORLD_SIZE"] = str(world_size)
+os.environ["RANK"] = str(local_rank)
+os.environ["MASTER_PORT"] = str(port)
+
+print(f"local_rank: {local_rank}")
+print(f"world_size: {world_size}")
 
 def _make_r_io_base(f, mode: str):
     if not isinstance(f, io.IOBase):
@@ -141,7 +168,8 @@ def _tokenize_fn(strings: Sequence[str], tokenizer: transformers.PreTrainedToken
         tokenizer(
             text,
             return_tensors="pt",
-            padding="longest",
+            # padding="longest",
+            padding="max_length",
             max_length=tokenizer.model_max_length,
             truncation=True,
         )
@@ -169,7 +197,7 @@ def preprocess(
     examples_tokenized, sources_tokenized = [_tokenize_fn(strings, tokenizer) for strings in (examples, sources)]
     input_ids = examples_tokenized["input_ids"]
     labels = copy.deepcopy(input_ids)
-    for label, source_len in zip(labels, sources_tokenized["input_ids_lens"]):
+    for idx, (label, source_len) in enumerate(zip(labels, sources_tokenized["input_ids_lens"])):
         label[:source_len] = IGNORE_INDEX
     return dict(input_ids=input_ids, labels=labels)
 
@@ -193,8 +221,10 @@ class SupervisedDataset(Dataset):
         targets = [f"{example['output']}{tokenizer.eos_token}" for example in list_data_dict]
 
         logging.warning("Tokenizing inputs... This may take some time...")
-        data_dict = preprocess(sources, targets, tokenizer)
-
+        # data_dict = preprocess(sources, targets, tokenizer)
+        # TODO: use a subset for debug
+        data_dict = preprocess(sources[:1000], targets[:1000], tokenizer)
+        logging.warning("Finish tokenizing inputs...")
         self.input_ids = data_dict["input_ids"]
         self.labels = data_dict["labels"]
 
@@ -234,8 +264,10 @@ def make_supervised_data_module(tokenizer: transformers.PreTrainedTokenizer, dat
 def train():
     parser = transformers.HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+    
+    print("Training args of checkpointing: ", training_args.gradient_checkpointing)
 
-    # NOTE: May expand supported model types in the future
+    # # NOTE: May expand supported model types in the future
     if model_args.model_type == "gpt-neox":
         replace_gpt_neox_attn(training_args.use_flash_attn, training_args.use_full_attn)
     else:
@@ -259,26 +291,32 @@ def train():
             config.rope_scaling = {"type": "linear", "factor": scaling_factor}
 
     # Load model and tokenizer
-    model = transformers.AutoModelForCausalLM.from_pretrained(
+    model = AutoModelForCausalLM.from_pretrained(
         model_args.model_name_or_path,
         config=config,
         cache_dir=training_args.cache_dir,
         torch_dtype=torch.bfloat16,
-        quantization_config=BitsAndBytesConfig(
-            load_in_4bit=True,
-            llm_int8_threshold=6.0,
-            llm_int8_has_fp16_weight=False,
-            bnb_4bit_compute_dtype=torch.bfloat16,
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_type="nf4",
-        ),
+        # quantization_config=BitsAndBytesConfig(
+        #     load_in_4bit=True,
+        #     llm_int8_threshold=6.0,
+        #     llm_int8_has_fp16_weight=False,
+        #     bnb_4bit_compute_dtype=torch.bfloat16,
+        #     bnb_4bit_use_double_quant=True,
+        #     bnb_4bit_quant_type="nf4",
+        # ),
+        load_in_low_bit="nf4",
+        modules_to_not_convert=["lm_head"],
+        optimize_model=False,
     )
+    model = model.to(f'xpu:{os.environ.get("LOCAL_RANK", 0)}')
+    print(f"Model moved to rank {os.environ.get('LOCAL_RANK')}")
 
-    for param in model.parameters():
-        param.requires_grad = False  # freeze the model - train adapters later
-        if param.ndim == 1:
-            # cast the small parameters (e.g. layernorm) to fp32 for stability
-            param.data = param.data.to(torch.float32)
+    model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=training_args.gradient_checkpointing)
+    # for param in model.parameters():
+    #     param.requires_grad = False  # freeze the model - train adapters later
+    #     if param.ndim == 1 and param.dtype != torch.uint8:
+    #         # cast the small parameters (e.g. layernorm) to fp32 for stability
+    #         param.data = param.data.to(torch.float32)
 
     tokenizer = transformers.AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
@@ -287,7 +325,6 @@ def train():
         padding_side="right",
         use_fast=True,
     )
-
     special_tokens_dict = dict()
     if tokenizer.pad_token is None:
         special_tokens_dict["pad_token"] = DEFAULT_PAD_TOKEN
@@ -330,6 +367,10 @@ def train():
             return super().forward(x).to(torch.float32)
 
     model.lm_head = CastOutputToFloat(model.lm_head)
+    
+    for name, param in model.named_parameters():
+    # if (param.dtype == torch.float16) or (param.dtype == torch.bfloat16) or (param.dtype == torch.float32):
+        print(name, param.dtype, param.requires_grad_())
 
     # Verifying the datatypes.
     dtypes = {}
@@ -345,8 +386,8 @@ def train():
         print(k, v, v / total)
 
     model.config.use_cache = False         # required for gradient checkpointing
-    model.enable_input_require_grads()     # required for gradient checkpointing
-    model.gradient_checkpointing_enable()  # enable gradient checkpointing
+    # model.enable_input_require_grads()     # required for gradient checkpointing
+    # model.gradient_checkpointing_enable()  # enable gradient checkpointing
 
     trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
     trainer.train()

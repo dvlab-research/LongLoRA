@@ -7,15 +7,15 @@ import torch
 from torch import nn
 import transformers
 from einops import rearrange
-from flash_attn import __version__ as flash_attn_version
-from flash_attn.bert_padding import pad_input, unpad_input
-from flash_attn.flash_attn_interface import (
-    flash_attn_func,
-    flash_attn_varlen_kvpacked_func,
-    flash_attn_varlen_qkvpacked_func
-)
+# from flash_attn import __version__ as flash_attn_version
+# from flash_attn.bert_padding import pad_input, unpad_input
+# from flash_attn.flash_attn_interface import (
+#     flash_attn_func,
+#     flash_attn_varlen_kvpacked_func,
+#     flash_attn_varlen_qkvpacked_func
+# )
 from transformers.models.llama.modeling_llama import apply_rotary_pos_emb, repeat_kv, rotate_half
-from flash_attn.bert_padding import unpad_input, pad_input
+# from flash_attn.bert_padding import unpad_input, pad_input
 import math
 
 group_size_ratio = 1/4
@@ -465,6 +465,15 @@ def _prepare_decoder_attention_mask_inference(
 
 def replace_llama_attn(use_flash_attn=True, use_full=False, inference=False):
     if use_flash_attn:
+        from flash_attn import __version__ as flash_attn_version
+        from flash_attn.bert_padding import pad_input, unpad_input
+        from flash_attn.flash_attn_interface import (
+            flash_attn_func,
+            flash_attn_varlen_kvpacked_func,
+            flash_attn_varlen_qkvpacked_func
+        )
+        # from transformers.models.llama.modeling_llama import apply_rotary_pos_emb, repeat_kv, rotate_half
+        from flash_attn.bert_padding import unpad_input, pad_input
         cuda_major, cuda_minor = torch.cuda.get_device_capability()
         if cuda_major < 8:
             warnings.warn(
