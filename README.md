@@ -315,6 +315,7 @@ python3 inference.py  \
         --flash_attn True \
         --material "materials/paper1.txt"
 ```
+- Note that inference.py can be replaced by inference-qlora.py if you want to try 4-bit quantized fine-tuning for further GPU memory reduction. This follows [QLoRA](https://github.com/artidoro/qlora).
 
 ### Online Demo
 To deploy your own demo run 
