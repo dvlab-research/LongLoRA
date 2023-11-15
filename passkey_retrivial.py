@@ -93,7 +93,7 @@ def main(args):
     print("base model", args.base_model)
 
     if args.flash_attn:
-        replace_llama_attn()
+        replace_llama_attn(use_full=True)
 
     # Set RoPE scaling factor
     config = transformers.AutoConfig.from_pretrained(
