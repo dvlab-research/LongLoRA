@@ -198,17 +198,17 @@ torchrun --nproc_per_node=8 supervised-fine-tune.py  \
         --model_name_or_path path_to_Llama2_chat_models \
         --bf16 True \
         --output_dir path_to_saving_checkpoints       \
-        --model_max_length 32768 \
+        --model_max_length 16384 \
         --use_flash_attn True \
-        --data_path LongAlpaca-12k.json \
+        --data_path LongAlpaca-16k-length.json \
         --low_rank_training True \
-        --num_train_epochs 3  \
+        --num_train_epochs 5  \
         --per_device_train_batch_size 1     \
         --per_device_eval_batch_size 2     \
-        --gradient_accumulation_steps 1     \
+        --gradient_accumulation_steps 8     \
         --evaluation_strategy "no"     \
         --save_strategy "steps"     \
-        --save_steps 1000     \
+        --save_steps 98     \
         --save_total_limit 2     \
         --learning_rate 2e-5     \
         --weight_decay 0.0     \
