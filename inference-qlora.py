@@ -21,6 +21,7 @@ PROMPT_DICT = {
         "If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.\n"
         "<</SYS>> \n\n {instruction} [/INST]"
     ),
+    "prompt_llama2": "[INST]{instruction}[/INST]"
 }
 
 def parse_config():
@@ -116,7 +117,7 @@ def main(args):
                               max_gen_len=args.max_gen_len, use_cache=True)
 
     material = read_txt_file(args.material)
-    prompt_no_input = PROMPT_DICT["prompt_no_input_llama2"]
+    prompt_no_input = PROMPT_DICT["prompt_llama2"]
     prompt = prompt_no_input.format_map({"instruction": material + "\n%s"%args.question})
 
     output = respond(prompt=prompt)
