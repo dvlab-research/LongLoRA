@@ -191,6 +191,7 @@ torchrun --nproc_per_node=8 fine-tune.py  \
 ```
 cd path_to_saving_checkpoints && python zero_to_fp32.py . pytorch_model.bin
 ```
+Note that the path_to_saving_checkpoints might be the global_step directory, which depends on the deepspeed versions.
 
 ### Supervised Fine-tuning
 ```
