@@ -72,7 +72,8 @@ PROMPT_DICT = {
         "You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n\n"
         "If a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.\n"
         "<</SYS>> \n\n {instruction} \n{input} [/INST]"
-    )
+    ),
+    "prompt_llama2": "[INST]{instruction}[/INST]"
 }
 
 
@@ -184,7 +185,7 @@ class SupervisedDataset(Dataset):
 
         logging.warning("Formatting inputs...")
 
-        prompt_input, prompt_no_input = PROMPT_DICT["prompt_input_llama2"], PROMPT_DICT["prompt_no_input_llama2"]
+        prompt_input, prompt_no_input = PROMPT_DICT["prompt_input_llama2"], PROMPT_DICT["prompt_llama2"]
         sources = [
             prompt_input.format_map(example) if example.get("input", "") != "" else prompt_no_input.format_map(example)
             for example in list_data_dict
