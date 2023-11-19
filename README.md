@@ -222,6 +222,7 @@ torchrun --nproc_per_node=8 supervised-fine-tune.py  \
 - There is no need to make supervised fine-tuning upon the fine-tuned context extended models. It is all right to directly use base model as Llama2-chat models, as the amount of long instruction following data is enough for SFT.
 - Our long instruction following data can be found in [LongAlpaca-12k.json](https://huggingface.co/datasets/Yukang/LongAlpaca-12k).
 - Note that supervised-fine-tune.py can be replaced by supervised-fine-tune-qlora.py if you want to try 4-bit quantized fine-tuning for further GPU memory reduction. This follows [QLoRA](https://github.com/artidoro/qlora).
+- If you meet issue for saving pytorch_model.bin after the qlora sft, please refer to this [issue](https://github.com/dvlab-research/LongLoRA/issues/123).
 
 ### Get trainable weights in low-rank training
 In low-rank training, we set embedding and normalization layers as trainable. Please use the following line to extract the trainable weights `trainable_params.bin` from `pytorch_model.bin`
