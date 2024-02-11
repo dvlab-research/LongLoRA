@@ -30,6 +30,7 @@ from llama_attn_replace_sft import replace_llama_attn
 from gptneox_attn_replace import replace_gpt_neox_attn
 from peft import LoraConfig, get_peft_model
 from torch.distributed import barrier
+from save_callback import SavePeftModelCallback
 
 IGNORE_INDEX = -100
 DEFAULT_PAD_TOKEN = "[PAD]"
@@ -316,6 +317,7 @@ def train():
     model.gradient_checkpointing_enable()  # enable gradient checkpointing
 
     trainer = Trainer(model=model, tokenizer=tokenizer, args=training_args, **data_module)
+    trainer.add_callback(SavePeftModelCallback)
     trainer.train()
     trainer.save_state()
     trainer.save_model(output_dir=training_args.output_dir)

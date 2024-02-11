@@ -64,9 +64,18 @@ def main(args):
     print("base model", args.base_model)
     print("peft model", args.peft_model)
 
+    # Load config from peft model dir if exists
+    # In order to reuse the rope scaling configurations
+    config_path = os.path.join(args.peft_model, "config.json")
+    if os.path.isfile(config_path):
+        config = transformers.AutoConfig.from_pretrained(config_path)
+    else:
+        config = transformers.AutoConfig.from_pretrained(args.base_model)
+
     # Load model and tokenizer
     model = transformers.AutoModelForCausalLM.from_pretrained(
         args.base_model,
+        config=config,
         cache_dir=args.cache_dir,
         torch_dtype=torch.float16,
         device_map="auto",
