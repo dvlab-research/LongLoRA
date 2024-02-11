@@ -38,7 +38,11 @@ class SavePeftModelCallback(TrainerCallback):
             logging.info(f"Trainable parameters saved at: {checkpoint_folder}")
 
         # Save LoRA adapter weight
-        kwargs["model"].save_pretrained(checkpoint_folder)
+        kwargs["model"].config.save_pretrained(checkpoint_folder)
         logging.info(f"LoRA adapter weights saved at: {checkpoint_folder}")
+
+        # Save model config in order to reuse rope scaling settings
+        kwargs["model"].save_pretrained(checkpoint_folder)
+        logging.info(f"Model config saved at: {checkpoint_folder}")
 
         return control
