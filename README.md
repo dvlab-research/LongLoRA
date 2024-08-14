@@ -381,13 +381,7 @@ If you find this project useful in your research, please consider citing:
 
 ```
 @inproceedings{longlora,
-  author       = {Yukang Chen and
-                  Shengju Qian and
-                  Haotian Tang and
-                  Xin Lai and
-                  Zhijian Liu and
-                  Song Han and
-                  Jiaya Jia},
+  author       = {Yukang Chen and Shengju Qian and Haotian Tang and Xin Lai and Zhijian Liu and Song Han and Jiaya Jia},
   title        = {LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models},
   booktitle    = {The International Conference on Learning Representations (ICLR)},
   year         = {2024},
