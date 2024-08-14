@@ -380,11 +380,17 @@ During our dataset collection, we convert paper and books from pdf to text. The 
 If you find this project useful in your research, please consider citing:
 
 ```
-@article{longlora,
-  title={LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models},
-  author={Yukang Chen and Shengju Qian and Haotian Tang and Xin Lai and Zhijian Liu and Song Han and Jiaya Jia},
-  journal={arXiv:2309.12307},
-  year={2023}
+@inproceedings{longlora,
+  author       = {Yukang Chen and
+                  Shengju Qian and
+                  Haotian Tang and
+                  Xin Lai and
+                  Zhijian Liu and
+                  Song Han and
+                  Jiaya Jia},
+  title        = {LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models},
+  booktitle    = {The International Conference on Learning Representations (ICLR)},
+  year         = {2024},
 }
 ```
 
