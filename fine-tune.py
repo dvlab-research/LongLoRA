@@ -27,6 +27,7 @@ from llama_attn_replace import replace_llama_attn
 from gptneox_attn_replace import replace_gpt_neox_attn
 from peft import LoraConfig, get_peft_model
 from torch.distributed import barrier
+from save_callback import SavePeftModelCallback
 
 
 from datasets import load_dataset
@@ -202,6 +203,7 @@ def train():
         train_dataset=dataset["train"],
         eval_dataset=None,
         data_collator=data_collator)
+    trainer.add_callback(SavePeftModelCallback)
     trainer.train()
     trainer.save_state()
     trainer.save_model(output_dir=training_args.output_dir)
